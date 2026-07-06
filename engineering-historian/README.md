@@ -4,6 +4,10 @@ Six months from now you won't remember why you abandoned an
 architecture, or the exact firewall command that fixed your Oracle
 deployment. Git doesn't record *why*. This does.
 
+Built to the open [Agent Skills](https://agentskills.io) standard —
+plain markdown and a `SKILL.md`, no proprietary format. Tested on
+Claude Code; should work in any Agent Skills–compliant runtime.
+
 ## What it does
 One command at the end of a coding session — `/history` — and the
 agent writes a dated markdown record of that session: decisions made

@@ -13,7 +13,7 @@ purpose — retrieval only pays off after time has erased your memory.
 > VM. How did I set up the firewall and TLS last time? I remember it
 > being annoying.
 
-**Claude (after grepping `knowledge/`):**
+**Agent (after grepping `knowledge/`):**
 
 From **notes-api/2026-07-05.md** — the annoyance you remember was two
 firewalls in series: the cloud provider's security list AND the VM's
@@ -54,7 +54,7 @@ Logged — rough estimate of time this saved?
 > **Me (2026-12-02):** Thinking of moving notes-api to a PaaS to stop
 > maintaining the VM. Didn't I already try that?
 
-**Claude (after grepping `knowledge/`):**
+**Agent (after grepping `knowledge/`):**
 
 Yes — from **notes-api/2026-07-05.md**, Decisions, entry 1: you
 rejected Railway after a two-day trial because free-tier cold starts
