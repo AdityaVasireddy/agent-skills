@@ -1,4 +1,4 @@
-﻿# Agent Skills
+# Agent Skills
 
 Small, focused skills built to the open [Agent Skills](https://agentskills.io) standard. Each one ships with a stated purpose, a real example, and — where it applies — a pre-declared kill criterion I test against before calling it "done."
 
@@ -12,6 +12,12 @@ Captures a chronological, per-project engineering record — decisions made (and
 
 **v3 adds automatic capture.** v1/v2.5 relied on remembering to type `/history` at session end — the honest failure mode of any manual-trigger system. v3 replaces the trigger with a Claude Code hook that sweeps the session transcript automatically and drafts records (`status: auto`) for review; nothing else about the pipeline, formats, or promotion rules changed. See `engineering-historian/INSTALL.md` for setup. Currently in a 60-day usage trial — criteria pre-registered in `SKILL.md`, including new trigger-reliability and sweep-confirm-rate thresholds specific to v3.
 
+### [five-gate-method](https://github.com/AdityaVasireddy/agent-skills/blob/main/five-gate-method) — v1
+
+Evidence-driven task discipline for hard tasks — anything where the first idea might be wrong. Five ordered gates, each with a binary pass condition: scope before work, evidence before reasoning, adversarial reasoning, verification at the layer of the claim, calibrated reporting. Plus a "smells" list that catches skipped gates mid-task ("you're on attempt three of the same fix" is easier to notice than "reason adversarially" is to remember).
+
+The premise: model intelligence is rented — pricing and availability change under you — but working *discipline* is behavioral, not stylistic, so it transfers to whatever model you run next. One markdown file, no scripts, no dependencies; if a runtime has no skill support at all, the body pastes into a rules file and works the same. Shipped for behavioral testing — the pre-declared check is in `five-gate-method/README.md`.
+
 More skills landing here over time.
 
 ## Install
@@ -20,7 +26,7 @@ Skills are plain folders — drop one into whatever skills directory your agent 
 
 **engineering-historian specifically** ships two extra pieces beyond the skill folder (a hook script and a sweep prompt) because Claude Code hooks are invoked by file path, not by skill content. See `engineering-historian/INSTALL.md` for the two-step setup.
 
-**For skills without an automation layer:** copy the skill's folder into `.claude/skills/<name>/` in your project, or `~/.claude/skills/<name>/` globally. Other Agent Skills–compatible tools use their own convention — check that tool's docs.
+**For skills without an automation layer** (five-gate-method is one): copy the skill's folder into `.claude/skills/<name>/` in your project, or `~/.claude/skills/<name>/` globally. Other Agent Skills–compatible tools use their own convention — check that tool's docs.
 
 ---
 
