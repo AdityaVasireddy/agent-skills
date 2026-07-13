@@ -11,12 +11,24 @@
 #   - Never recurses: the headless sweep session is guarded by HISTORIAN_SWEEP_ACTIVE.
 #   - Never loses evidence silently: failures append the transcript path to
 #     knowledge/.sweep/pending.log for retry at next sweep or /distill.
-#   - Idempotent across PreCompact -> SessionEnd: skips if user-turn count unchanged;
-#     otherwise the SWEEP prompt merges rather than duplicates.
+#   - Idempotent across PreCompact -> SessionEnd: skips if the transcript has not
+#     meaningfully grown since the last sweep of this session; otherwise the
+#     SWEEP prompt merges rather than duplicates.
+#   - Skips only provably trivial sessions (v3.1 triviality gate): any single
+#     deterministic WORK signal — transcript size, user turns, or git activity —
+#     runs the sweep. See docs/adr/ADR-001-capture-gate-triviality.md.
 #
 # Requirements: bash, jq, git (optional), claude CLI on PATH.
-# Config (env): HISTORIAN_MODEL (optional model override for the sweep call)
-#               HISTORIAN_MIN_TURNS (default 10 — skip trivial sessions)
+# Config (env): HISTORIAN_MODEL       optional model override for the sweep call
+#               HISTORIAN_MIN_TURNS   default 10 — user turns at/above which the
+#                                     turns signal reads WORK (one gate signal;
+#                                     no longer the whole gate as in v3.0)
+#               HISTORIAN_WORK_BYTES  default 50000 — raw transcript bytes
+#                                     at/above which the size signal reads WORK
+#               HISTORIAN_GIT_WINDOW  default "12 hours ago" — non-historian
+#                                     commits since this read WORK
+#               HISTORIAN_DEDUP_DELTA default 4096 — bytes the transcript must
+#                                     grow beyond the last sweep to re-sweep
 
 set -u
 
@@ -73,19 +85,73 @@ extract_transcript() {
   ' "$TRANSCRIPT" 2>/dev/null
 }
 
+# ---- Capture gate (v3.1): a triviality gate, not a significance gate ----
+# Invariant: skip ONLY when every AVAILABLE deterministic signal proves the
+# session trivial. Any single WORK signal runs the sweep; an unavailable
+# signal can never argue for skipping. A false run costs one cheap model call
+# that concludes NOTHING; a false skip silently loses engineering history —
+# so the gate always degrades toward running. No signal here estimates
+# significance; that is the sweep model's job (SWEEP.md gates G1-G4).
+# Rationale and rejected alternatives: docs/adr/ADR-001-capture-gate-triviality.md.
+RAW_BYTES="$(wc -c < "$TRANSCRIPT" | tr -d '[:space:]')"
+RAW_BYTES="${RAW_BYTES:-0}"
 USER_TURNS="$(extract_transcript | grep -c '^\[user\]' || true)"
-MIN_TURNS="${HISTORIAN_MIN_TURNS:-10}"
-if [ "${USER_TURNS:-0}" -lt "$MIN_TURNS" ]; then
-  log "SKIP trivial session: $USER_TURNS user turns ($SESSION_ID)"; exit 0
+USER_TURNS="${USER_TURNS:-0}"
+
+TURNS_WORK="${HISTORIAN_MIN_TURNS:-10}"
+BYTES_WORK="${HISTORIAN_WORK_BYTES:-50000}"
+GIT_WINDOW="${HISTORIAN_GIT_WINDOW:-12 hours ago}"
+
+GATE_RUN_REASON=""
+
+# Tier 0a — raw transcript size. Deliberately reads the file on disk, not
+# parsed content: tool-heavy agentic sessions are huge on disk however few
+# prompts they contain, and this signal keeps firing even if the transcript
+# schema drifts and extraction goes quiet (turns=0 must never imply trivial
+# on its own).
+if [ "$RAW_BYTES" -ge "$BYTES_WORK" ]; then
+  GATE_RUN_REASON="transcript ${RAW_BYTES}B >= ${BYTES_WORK}B"
 fi
 
-# ---- Dedup: skip if this session was already swept at this turn count ----
+# Tier 0b — user turns (the entire v3.0 gate, demoted to one signal among equals).
+if [ -z "$GATE_RUN_REASON" ] && [ "$USER_TURNS" -ge "$TURNS_WORK" ]; then
+  GATE_RUN_REASON="$USER_TURNS user turns >= $TURNS_WORK"
+fi
+
+# Tier 1 — git evidence, when a repo is present. Commits in the window count
+# as work; the historian's own auto-commits do not. Outside a repo the signal
+# is unavailable, which per the invariant just means one fewer way to prove
+# triviality — never a reason to skip.
+GIT_SIGNAL="unavailable"
+if [ -z "$GATE_RUN_REASON" ] && git rev-parse --git-dir >/dev/null 2>&1; then
+  RECENT_COMMITS="$(git log --since="$GIT_WINDOW" --oneline --grep='^history(auto):' --invert-grep 2>/dev/null | grep -c . || true)"
+  if [ "${RECENT_COMMITS:-0}" -gt 0 ]; then
+    GATE_RUN_REASON="$RECENT_COMMITS commit(s) since $GIT_WINDOW"
+  else
+    GIT_SIGNAL="no commits since $GIT_WINDOW"
+  fi
+fi
+
+if [ -z "$GATE_RUN_REASON" ]; then
+  log "SKIP trivial: $USER_TURNS turns < $TURNS_WORK, ${RAW_BYTES}B < ${BYTES_WORK}B, git: $GIT_SIGNAL — every available signal trivial ($SESSION_ID)"
+  exit 0
+fi
+
+# ---- Dedup: skip if already swept and the transcript has not meaningfully grown ----
+# Keyed on raw bytes, not user turns (v3.0): turns miss autonomous post-compact
+# work — PreCompact sweeps at N turns, the model keeps working, SessionEnd
+# arrives still at N turns and was wrongly deduped. Bytes grow with any
+# activity, so a real continuation re-sweeps (SWEEP.md rule 6 merges, never
+# duplicates), while the few bytes of a bare exit stay under the delta.
 SESSLOG="$SWEEPDIR/sessions.log"
 touch "$SESSLOG"
-PREV_TURNS="$(grep "^$SESSION_ID	" "$SESSLOG" 2>/dev/null | tail -1 | cut -f2)"
-if [ -n "${PREV_TURNS:-}" ] && [ "$USER_TURNS" -le "$PREV_TURNS" ]; then
-  log "SKIP already swept at $PREV_TURNS turns ($SESSION_ID)"; exit 0
+DEDUP_DELTA="${HISTORIAN_DEDUP_DELTA:-4096}"
+PREV_BYTES="$(grep "^$SESSION_ID	" "$SESSLOG" 2>/dev/null | tail -1 | cut -f2)"
+if [ -n "${PREV_BYTES:-}" ] && [ "$RAW_BYTES" -le "$((PREV_BYTES + DEDUP_DELTA))" ]; then
+  log "SKIP already swept at ${PREV_BYTES}B, now ${RAW_BYTES}B (growth <= ${DEDUP_DELTA}B) ($SESSION_ID)"; exit 0
 fi
+
+log "GATE run: $GATE_RUN_REASON [turns=$USER_TURNS bytes=$RAW_BYTES] ($SESSION_ID)"
 
 # ---- Assemble the sweep prompt from the input contract ----
 SWEEP_PROMPT="$SKILL_DIR/SWEEP.md"
@@ -248,8 +314,8 @@ RC=$?
 
 if [ "$RC" -eq 10 ]; then
   rm -f "$EXTRACTED"
-  printf '%s\t%s\n' "$SESSION_ID" "$USER_TURNS" >> "$SESSLOG"
-  log "OK nothing capture-worthy ($USER_TURNS turns, $SESSION_ID)"
+  printf '%s\t%s\t%s\n' "$SESSION_ID" "$RAW_BYTES" "$USER_TURNS" >> "$SESSLOG"
+  log "OK nothing capture-worthy ($USER_TURNS turns, ${RAW_BYTES}B, $SESSION_ID)"
   exit 0
 fi
 
@@ -268,9 +334,9 @@ fi
 TMP_DAY="$(mktemp -p "$(dirname "$DAYFILE")")"
 cp "$EXTRACTED" "$TMP_DAY" && mv "$TMP_DAY" "$DAYFILE"
 rm -f "$EXTRACTED"
-printf '%s\t%s\n' "$SESSION_ID" "$USER_TURNS" >> "$SESSLOG"
+printf '%s\t%s\t%s\n' "$SESSION_ID" "$RAW_BYTES" "$USER_TURNS" >> "$SESSLOG"
 N_AUTO="$(grep -c '^status: auto' "$DAYFILE" || true)"
-log "OK wrote $DAYFILE ($N_AUTO auto cases, $USER_TURNS turns, $SESSION_ID)"
+log "OK wrote $DAYFILE ($N_AUTO auto cases, $USER_TURNS turns, ${RAW_BYTES}B, $SESSION_ID)"
 
 # ---- Commit, mirroring v2.5 /history behavior (never push) ----
 if git rev-parse --git-dir >/dev/null 2>&1 && [ ! -d "$(git rev-parse --git-dir)/rebase-merge" ]; then

@@ -1,4 +1,4 @@
-# Install — engineering-historian v3 (Claude Code)
+# Install — engineering-historian v3.1 (Claude Code)
 
 v3 captures automatically: a hook fires when a session ends, drafts a day file, and you review the drafts once a week at `/distill`. Nothing to remember day to day.
 
@@ -16,6 +16,10 @@ engineering-historian/
   assets/
     SWEEP.md                     the sweep's prompt (model-agnostic, read by the hook)
     capture-rules.seed.md        starting knowledge/capture-rules.md for a new vault
+  tests/
+    run-tests.sh                 end-to-end regression suite (stubbed model binary)
+  docs/adr/                      architecture decision records
+  CHANGELOG.md                   release notes per version
 ```
 
 `scripts/` and `assets/` are not documentation — `historian-sweep.sh` is executed, and `SWEEP.md` is fed to a model as a prompt. They must exist as standalone files no matter where you install; the skill can't "contain" them because Claude Code invokes hooks by path, and the sweep runs in a separate headless call where SKILL.md isn't loaded.
@@ -137,8 +141,22 @@ Failures never interrupt you — they queue in `knowledge/.sweep/pending.log` an
 ## Optional config (env vars)
 
 - `HISTORIAN_MODEL` — model for the sweep call (a cheap model is correct; sweeps fire often, the work is reconstruction not frontier reasoning)
-- `HISTORIAN_MIN_TURNS` — skip sessions shorter than this many user turns (default 10)
 - `HISTORIAN_SKILL_DIR` — where `SWEEP.md` lives (default `~/.claude/historian`)
+
+The v3.1 capture gate skips a session only when **every** signal below reads trivial (any single one at/over its threshold runs the sweep — see `docs/adr/ADR-001-capture-gate-triviality.md`):
+
+- `HISTORIAN_MIN_TURNS` — user turns at/above which the turns signal reads WORK (default 10; same name and default as v3.0, but no longer sufficient to skip on its own)
+- `HISTORIAN_WORK_BYTES` — raw transcript bytes at/above which the size signal reads WORK (default 50000; this is what catches three-prompt sessions with hours of agentic work)
+- `HISTORIAN_GIT_WINDOW` — commits since this `git log --since` expression read WORK; the historian's own `history(auto):` commits don't count (default `12 hours ago`)
+- `HISTORIAN_DEDUP_DELTA` — bytes the transcript must grow past the last sweep of the same session before re-sweeping (default 4096)
+
+For the hook to see any of these on Windows, set them in `~/.claude/settings.json`'s `"env"` block — the hook's non-login Git Bash shell does not read `.bashrc` or PowerShell profiles (same trap as `jq` above).
+
+**Upgrading from v3.0:** no action needed — old config keeps working, vaults and day files are untouched. One one-time effect: a session the old version already swept may re-sweep once (the dedup log's second column changed from turns to bytes); the sweep's merge rule absorbs it without duplicating cases.
+
+## Tests
+
+`bash tests/run-tests.sh` from the skill root — 13 end-to-end scenarios driving the real script with a stubbed `claude` binary (no model calls, no cost). Run it after any change to `historian-sweep.sh`, before re-deploying the runtime copy.
 
 ## Other tools
 

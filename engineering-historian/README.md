@@ -21,6 +21,14 @@ confirm or decline.
 that don't support the automatic hook, or when you want to capture
 something yourself, in the moment.
 
+**v3.1** hardened the trigger: the sweep now skips only sessions that
+are *provably trivial* — transcript size, user turns, and recent git
+activity all quiet — instead of guessing significance from a turn
+count. Three-prompt sessions where the agent worked for hours are
+captured; when in doubt, it captures. Details in
+[`CHANGELOG.md`](./CHANGELOG.md) and
+[`docs/adr/ADR-001-capture-gate-triviality.md`](./docs/adr/ADR-001-capture-gate-triviality.md).
+
 No database. No embeddings. No dashboard. Just markdown + git.
 
 One thing to know up front: the hook fires only when Claude Code

@@ -6,11 +6,11 @@ Built and tested on Claude Code. The Agent Skills spec is implemented across oth
 
 ## Skills
 
-### [engineering-historian](https://github.com/AdityaVasireddy/agent-skills/blob/main/engineering-historian) — v3
+### [engineering-historian](https://github.com/AdityaVasireddy/agent-skills/blob/main/engineering-historian) — v3.1
 
 Captures a chronological, per-project engineering record — decisions made (and alternatives rejected), verified commands, mistakes, open questions. The principle: *the log is the asset, the reasoning is rented.*
 
-**v3 adds automatic capture.** v1/v2.5 relied on remembering to type `/history` at session end — the honest failure mode of any manual-trigger system. v3 replaces the trigger with a Claude Code hook that sweeps the session transcript automatically and drafts records (`status: auto`) for review; nothing else about the pipeline, formats, or promotion rules changed. See `engineering-historian/INSTALL.md` for setup. Currently in a 60-day usage trial — criteria pre-registered in `SKILL.md`, including new trigger-reliability and sweep-confirm-rate thresholds specific to v3.
+**v3 adds automatic capture.** v1/v2.5 relied on remembering to type `/history` at session end — the honest failure mode of any manual-trigger system. v3 replaces the trigger with a Claude Code hook that sweeps the session transcript automatically and drafts records (`status: auto`) for review; nothing else about the pipeline, formats, or promotion rules changed. v3.1 hardens the trigger further: the sweep skips only provably trivial sessions (transcript size, user turns, and git activity all quiet), so prompt-light agentic sessions are no longer missed. See `engineering-historian/INSTALL.md` for setup. Currently in a 60-day usage trial — criteria pre-registered in `SKILL.md`, including new trigger-reliability and sweep-confirm-rate thresholds specific to v3.
 
 ### [crucible](https://github.com/AdityaVasireddy/agent-skills/blob/main/crucible) — v1
 
