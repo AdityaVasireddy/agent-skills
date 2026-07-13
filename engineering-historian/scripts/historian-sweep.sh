@@ -132,25 +132,130 @@ if ! timeout 300 claude -p "${MODEL_ARGS[@]}" < "$PROMPT_FILE" > "$OUT_FILE" 2>>
 fi
 unset HISTORIAN_SWEEP_ACTIVE
 
-# ---- Validate and write atomically ----
-# Strip a leading/trailing markdown fence if the model added one despite instructions.
-sed -i '1{/^```/d}; ${/^```$/d}' "$OUT_FILE"
-FIRST_LINE="$(head -c 20 "$OUT_FILE" | head -1)"
+# ---- Validate model output: locate genuine front matter, tolerate preamble/fences ----
+# Model output is untrusted, non-deterministic text that should CONTAIN a day
+# file (or the word NOTHING) — not a byte-exact contract on line 1. This
+# locates validated front matter (an opening '---' with a closing '---'
+# within 15 lines AND at least one key:value line between them — this
+# rejects a stray horizontal rule in conversational filler) and extracts
+# from there to EOF, dropping any wrapping code fence and post-fence chatter.
+#
+# Portability note: uses only grep, sed, cut, tr, wc, tail, head, and bash
+# builtins — no awk, no mapfile/readarray. Every tool here is one this
+# script's ORIGINAL code already exercised successfully (grep, sed via the
+# old fence-strip line, mktemp, cut is POSIX-baseline), so it should run
+# wherever the rest of the script already runs — Git Bash, WSL, or Linux —
+# without introducing a new untested dependency.
+classify_and_extract() {
+  local raw="$1" dest="$2"
 
-if grep -qx 'NOTHING' "$OUT_FILE"; then
+  if [ ! -s "$raw" ] || ! grep -q '[^[:space:]]' "$raw"; then
+    printf 'reason=empty-output bytes=%s' "$(wc -c < "$raw")"
+    return 20
+  fi
+
+  local stripped
+  stripped="$(sed -e 's/^```.*$//' -e 's/\r$//' "$raw" | tr -d '[:space:]')"
+  if printf '%s' "$stripped" | grep -qiE '^nothing\.?$'; then
+    return 10
+  fi
+
+  # Candidate '---' delimiter line numbers (CR-tolerant, trailing-space-tolerant).
+  local dash_lines
+  dash_lines="$(grep -nE '^---[[:space:]]*\r?$' "$raw" | cut -d: -f1)"
+
+  local start_line="" prev="" d
+  for d in $dash_lines; do
+    if [ -n "$prev" ]; then
+      local gap=$((d - prev))
+      if [ "$gap" -ge 2 ] && [ "$gap" -le 16 ]; then
+        if sed -n "$((prev+1)),$((d-1))p" "$raw" | grep -qE '^[A-Za-z_-]+:[[:space:]]*'; then
+          start_line="$prev"
+          break
+        fi
+      fi
+    fi
+    prev="$d"
+  done
+
+  if [ -z "$start_line" ]; then
+    local bytes lines dashes head200
+    bytes="$(wc -c < "$raw")"; lines="$(wc -l < "$raw")"
+    dashes="$(printf '%s\n' "$dash_lines" | grep -c . || true)"
+    head200="$(head -c 200 "$raw" | tr '\n\t' '  ')"
+    printf "reason=no-front-matter bytes=%s lines=%s bare-dashes=%s head='%s'" "$bytes" "$lines" "$dashes" "$head200"
+    return 20
+  fi
+
+  # Extract from the opening delimiter to EOF, then trim trailing blanks and
+  # a trailing wrapper fence (and anything a model appended after it).
+  local buf=() line
+  while IFS= read -r line || [ -n "$line" ]; do
+    buf+=("${line%$'\r'}")
+  done < <(tail -n +"$start_line" "$raw")
+
+  local n=${#buf[@]}
+  while [ "$n" -gt 0 ] && [ -z "$(printf '%s' "${buf[$((n-1))]}" | tr -d '[:space:]')" ]; do
+    n=$((n-1))
+  done
+  if [ "$n" -gt 0 ] && [[ "${buf[$((n-1))]}" == '```'* ]]; then
+    n=$((n-1))
+    while [ "$n" -gt 0 ] && [ -z "$(printf '%s' "${buf[$((n-1))]}" | tr -d '[:space:]')" ]; do
+      n=$((n-1))
+    done
+  fi
+
+  : > "$dest"
+  local i
+  for ((i = 0; i < n; i++)); do
+    printf '%s\n' "${buf[$i]}" >> "$dest"
+  done
+
+  # If chatter followed a closing fence, the fence line survives mid-file; cut there.
+  local fence_line
+  fence_line="$(grep -n '^```' "$dest" | head -1 | cut -d: -f1)"
+  if [ -n "$fence_line" ]; then
+    sed -i "${fence_line},\$d" "$dest"
+    local buf2=() line2
+    while IFS= read -r line2 || [ -n "$line2" ]; do buf2+=("$line2"); done < "$dest"
+    local n2=${#buf2[@]}
+    while [ "$n2" -gt 0 ] && [ -z "$(printf '%s' "${buf2[$((n2-1))]}" | tr -d '[:space:]')" ]; do
+      n2=$((n2-1))
+    done
+    : > "$dest"
+    for ((i = 0; i < n2; i++)); do printf '%s\n' "${buf2[$i]}" >> "$dest"; done
+  fi
+
+  return 0
+}
+
+# ---- Validate and write atomically ----
+EXTRACTED="$(mktemp)"
+DIAG="$(classify_and_extract "$OUT_FILE" "$EXTRACTED")"
+RC=$?
+
+if [ "$RC" -eq 10 ]; then
+  rm -f "$EXTRACTED"
   printf '%s\t%s\n' "$SESSION_ID" "$USER_TURNS" >> "$SESSLOG"
   log "OK nothing capture-worthy ($USER_TURNS turns, $SESSION_ID)"
   exit 0
 fi
 
-if [ "$FIRST_LINE" != "---" ]; then
+if [ "$RC" -eq 20 ]; then
+  rm -f "$EXTRACTED"
+  FAILEDDIR="$SWEEPDIR/failed"
+  mkdir -p "$FAILEDDIR"
+  KEEP="$FAILEDDIR/$TODAY-$SESSION_ID.raw.md"
+  cp "$OUT_FILE" "$KEEP" 2>/dev/null
+  ls -1t "$FAILEDDIR" 2>/dev/null | tail -n +21 | while read -r f; do rm -f "$FAILEDDIR/$f"; done
   printf '%s\t%s\t%s\n' "$TODAY" "$TRANSCRIPT" "$SESSION_ID" >> "$SWEEPDIR/pending.log"
-  log "FAIL output not a day file (starts: '$FIRST_LINE') — queued in pending.log"
+  log "FAIL output not a day file ($DIAG) — raw preserved at $KEEP — queued in pending.log"
   exit 0
 fi
 
 TMP_DAY="$(mktemp -p "$(dirname "$DAYFILE")")"
-cp "$OUT_FILE" "$TMP_DAY" && mv "$TMP_DAY" "$DAYFILE"
+cp "$EXTRACTED" "$TMP_DAY" && mv "$TMP_DAY" "$DAYFILE"
+rm -f "$EXTRACTED"
 printf '%s\t%s\n' "$SESSION_ID" "$USER_TURNS" >> "$SESSLOG"
 N_AUTO="$(grep -c '^status: auto' "$DAYFILE" || true)"
 log "OK wrote $DAYFILE ($N_AUTO auto cases, $USER_TURNS turns, $SESSION_ID)"

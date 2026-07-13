@@ -37,7 +37,7 @@ knowledge/
   retrieval-log.md      # append-only value log
   capture-rules.md      # sweep's binding negative rules + health counters (see Automation layer)
   README.md             # vault path/config notes only
-  .sweep/               # sweep machinery (logs, dedup, retry queue) — gitignored, never cited
+  .sweep/               # sweep machinery (logs, dedup, retry queue, failed/ raw-output archive) — gitignored, never cited
 ```
 
 Do NOT create any other folders or files (no events/, playbooks/, judgments/, topic folders). Principles and standards are vault-wide single files because promotion is cross-project by design. If a second session happens the same day for the same project, append under a `## Session 2 (HH:MM)` header.

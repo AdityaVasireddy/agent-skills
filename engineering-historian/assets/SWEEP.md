@@ -32,7 +32,7 @@ Identify decision segments in the transcript that pass ALL four gates, draft eac
 5. **`status: auto` on every case you draft.** Never `raw`.
 6. **Idempotency / merging.** If the existing day file already covers part of this transcript (an earlier sweep of the same session): preserve all existing content, update prose where the session continued, and add only cases whose decision is not already recorded — matching by meaning, not slug string. Never duplicate a case; never delete or rewrite an existing case body; never change an existing case's status. If the existing file records a genuinely different session of the same day, append your content under a `## Session 2 (HH:MM)` header (or the next number) instead of merging.
 7. **Empty result.** If no segment passes the gates AND the existing day file does not exist AND the session contains nothing worth even prose notes, output exactly the single word `NOTHING` and nothing else.
-8. **Output raw markdown only.** No code fences around the file, no commentary before or after. Your entire output is written verbatim to `knowledge/<project>/<date>.md`.
+8. **Output raw markdown only.** No code fences around the file, no commentary before or after, no introductory sentence like "Day file for X:" or "Here is today's day file." The **first four characters of your entire response must be `---\n`** and the last line must be the final content line of the file — nothing after it. Your entire output is written verbatim to `knowledge/<project>/<date>.md`.
 
 ## Output format — exact v3 day file
 

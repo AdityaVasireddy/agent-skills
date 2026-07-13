@@ -132,7 +132,7 @@ cat knowledge/.sweep/sweep.log            # expect: OK wrote knowledge/<project>
 grep "status: auto" knowledge/*/"$(date +%F)".md
 ```
 
-Failures never interrupt you — they queue in `knowledge/.sweep/pending.log` and retry at the next `/distill`.
+Failures never interrupt you — they queue in `knowledge/.sweep/pending.log` and retry at the next `/distill`. The model's raw output for each failure is preserved at `knowledge/.sweep/failed/` (most recent 20) for inspection.
 
 ## Optional config (env vars)
 
