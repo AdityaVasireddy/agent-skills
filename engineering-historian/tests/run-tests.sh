@@ -85,6 +85,9 @@ FIX_WRAPPED="$SANDBOX/fix-wrapped.md"
   cat "$FIX_CLEAN"
   printf '```\n\nLet me know if you want changes.\n'
 } > "$FIX_WRAPPED"
+# Missing closing front-matter delimiter — the live 2026-07-13 failure. In the
+# clean fixture line 7 is the closing '---'; delete it.
+FIX_NOCLOSE="$SANDBOX/fix-noclose.md"; sed '7d' "$FIX_CLEAN" > "$FIX_NOCLOSE"
 
 # ---- Transcript generator: N countable user turns, N assistant turns, then
 # pad with tool_result user entries (bytes that must NOT count as turns).
@@ -235,6 +238,17 @@ run_sweep "$P" "$T" SessionEnd t13-session
 export STUB_EXIT=0
 assert_grep "FAIL model call" "$P/knowledge/.sweep/sweep.log" "T13 failure logged"
 assert_grep "t13-session" "$P/knowledge/.sweep/pending.log" "T13 queued for retry"
+
+echo "== T14: missing closing front-matter delimiter is repaired, not rejected =="
+P="$(mk_project t14 repo)"; T="$SANDBOX/t14.jsonl"; mk_transcript "$T" 12 0
+export STUB_CALLED_FILE="$SANDBOX/t14.called"; export STUB_OUTPUT_FILE="$FIX_NOCLOSE"
+run_sweep "$P" "$T" SessionEnd t14-session
+DF="$P/knowledge/$(basename "$P")/$TODAY.md"
+assert_grep "OK wrote .*repaired=inserted-missing-front-matter-close" "$P/knowledge/.sweep/sweep.log" "T14 repair applied and logged"
+[ "$(head -1 "$DF" 2>/dev/null)" = "---" ] && ok "T14 day file starts at front matter" || bad "T14 day file first line is '$(head -1 "$DF" 2>/dev/null)'"
+[ "$(grep -c '^---$' "$DF" 2>/dev/null)" -eq 2 ] && ok "T14 front matter has both delimiters" || bad "T14 expected 2 bare --- lines, got $(grep -c '^---$' "$DF" 2>/dev/null)"
+assert_grep "^status: auto" "$DF" "T14 case content survived the repair"
+assert_no_file "$P/knowledge/.sweep/pending.log" "T14 nothing queued for retry"
 
 echo
 echo "======================================"

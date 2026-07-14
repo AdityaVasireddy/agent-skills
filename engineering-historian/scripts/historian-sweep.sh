@@ -225,7 +225,7 @@ unset HISTORIAN_SWEEP_ACTIVE
 # wherever the rest of the script already runs — Git Bash, WSL, or Linux —
 # without introducing a new untested dependency.
 classify_and_extract() {
-  local raw="$1" dest="$2"
+  local raw="$1" dest="$2" mode="${3:-}"
 
   if [ ! -s "$raw" ] || ! grep -q '[^[:space:]]' "$raw"; then
     printf 'reason=empty-output bytes=%s' "$(wc -c < "$raw")"
@@ -255,6 +255,39 @@ classify_and_extract() {
     fi
     prev="$d"
   done
+
+  # Repair path (v3.1.1): a lone opening '---' directly followed by front-matter
+  # key:value lines means the model emitted the day file but omitted the CLOSING
+  # delimiter (observed live 2026-07-13: a 9KB otherwise-perfect day file lost to
+  # one missing line). Insert the missing '---' after the last consecutive
+  # key:value line and re-validate. Structural normalization only — the same
+  # class as the fence/preamble stripping above; no content is added, removed,
+  # or reordered. Guarded to one attempt, and only when the key block contains
+  # a known front-matter key, so a stray horizontal rule followed by prose
+  # colons can't fake it.
+  if [ -z "$start_line" ] && [ "$mode" != "no-repair" ]; then
+    local open="" insert_at="" kv seen_known ln
+    for d in $dash_lines; do
+      kv=0; seen_known=0; ln=$((d+1))
+      while [ "$kv" -lt 20 ] && sed -n "${ln}p" "$raw" | grep -qE '^[A-Za-z_-]+:[[:space:]]*'; do
+        sed -n "${ln}p" "$raw" | grep -qE '^(project|date|type|stack|status):' && seen_known=1
+        kv=$((kv+1)); ln=$((ln+1))
+      done
+      if [ "$kv" -ge 2 ] && [ "$seen_known" -eq 1 ]; then
+        open="$d"; insert_at="$ln"; break
+      fi
+    done
+    if [ -n "$open" ]; then
+      local repaired rc2
+      repaired="$(mktemp)"
+      { head -n "$((insert_at - 1))" "$raw"; printf '%s\n' '---'; tail -n +"$insert_at" "$raw"; } > "$repaired"
+      classify_and_extract "$repaired" "$dest" no-repair
+      rc2=$?
+      rm -f "$repaired"
+      [ "$rc2" -eq 0 ] && printf 'repaired=inserted-missing-front-matter-close'
+      return "$rc2"
+    fi
+  fi
 
   if [ -z "$start_line" ]; then
     local bytes lines dashes head200
@@ -336,7 +369,7 @@ cp "$EXTRACTED" "$TMP_DAY" && mv "$TMP_DAY" "$DAYFILE"
 rm -f "$EXTRACTED"
 printf '%s\t%s\t%s\n' "$SESSION_ID" "$RAW_BYTES" "$USER_TURNS" >> "$SESSLOG"
 N_AUTO="$(grep -c '^status: auto' "$DAYFILE" || true)"
-log "OK wrote $DAYFILE ($N_AUTO auto cases, $USER_TURNS turns, ${RAW_BYTES}B, $SESSION_ID)"
+log "OK wrote $DAYFILE ($N_AUTO auto cases, $USER_TURNS turns, ${RAW_BYTES}B${DIAG:+, $DIAG}, $SESSION_ID)"
 
 # ---- Commit, mirroring v2.5 /history behavior (never push) ----
 if git rev-parse --git-dir >/dev/null 2>&1 && [ ! -d "$(git rev-parse --git-dir)/rebase-merge" ]; then

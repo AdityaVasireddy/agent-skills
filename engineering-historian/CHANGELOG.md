@@ -1,5 +1,13 @@
 # Changelog — Engineering Historian
 
+## v3.1.1 — 2026-07-13 — validator repairs a missing closing front-matter delimiter
+
+First live v3.1 sweep (issue-runtime, session `735eee11`): the gate and the tool lockdown both worked, and the model returned a complete, well-formed 9KB day file — minus exactly one line, the closing `---` of the front matter. The validator, which requires a bare `---` pair, correctly-per-spec rejected an output that was 99% perfect.
+
+- `scripts/historian-sweep.sh` — `classify_and_extract()` gains a repair path: a lone opening `---` directly followed by 2+ `key: value` lines (at least one a known front-matter key) has the missing closing `---` inserted before the first non-key line, then re-validates. Structural normalization only, same class as the existing fence/preamble stripping; guarded to one attempt. Successful repairs are visible in the `OK wrote` log line as `repaired=inserted-missing-front-matter-close`.
+- `assets/SWEEP.md` — Hard Rule 8 now demands the closing `---` explicitly (it previously stressed only the opening delimiter, which is likely why a distiller-grade model dropped the close).
+- `tests/run-tests.sh` — T14 reproduces the failure (clean fixture minus its closing delimiter) and asserts repair, both delimiters in the written day file, intact case content, and nothing queued. The fix was additionally replayed against the preserved raw output of the real failure before release: byte-identical result plus the one inserted line.
+
 ## v3.1 — 2026-07-13 — production hardening
 
 Nothing changes in what is captured, how it is promoted, retrieved, or stored. v3.1 hardens the automation layer: when the sweep fires, how its output is validated, and how failures are diagnosed.
