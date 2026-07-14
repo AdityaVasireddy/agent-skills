@@ -1,0 +1,5 @@
+# Engineering Historian sweep machinery — operational state, not vault content.
+# Per SKILL.md's vault layout: logs, dedup, retry queue, failed/ raw-output
+# archive. Day files, principles.md, standards.md, retrieval-log.md, etc.
+# under knowledge/ are vault content and ARE committed.
+knowledge/.sweep/
