@@ -116,7 +116,14 @@ Merge into `~/.claude/settings.json` (global) or `.claude/settings.json` (projec
 
 **Windows:** this exact JSON works unmodified. Claude Code automatically runs shell-form hook commands through Git Bash on Windows when Git for Windows is installed (which you need anyway, for `git`) — no explicit path to `bash.exe` required. If Claude Code ever fails to auto-detect it, point it explicitly via `~/.claude/settings.json`: `{ "env": { "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Program Files\\Git\\bin\\bash.exe" } }`.
 
-Done. `SessionEnd` fires when a session closes; `PreCompact` is a safety net that saves the transcript's content before a long conversation gets compressed. `knowledge/capture-rules.md` (seeded from `assets/capture-rules.seed.md`) and the gitignored `knowledge/.sweep/` are created automatically per project on the first sweep — no per-project setup step.
+Done. `SessionEnd` fires when a session closes; `PreCompact` is a safety net that saves the transcript's content before a long conversation gets compressed. `knowledge/capture-rules.md` and `knowledge/.gitignore` (containing `.sweep/`) are created automatically per project on the first invocation of the script — hook or `--doctor`/`--status`/`--replay` — no per-project setup step.
+
+**If you have a vault created before v3.1.2:** `.sweep/` may already be tracked in git (the auto-seed above didn't exist yet). Fix it once per affected vault:
+```bash
+git rm -r --cached knowledge/.sweep
+git commit -m "chore: stop tracking knowledge/.sweep (operational state, not vault content)"
+```
+The next sweep will (re)create `knowledge/.gitignore` and the `.sweep/` files will simply stop showing up in `git status`.
 
 ### End the session gracefully, or the hook won't fire
 
@@ -136,7 +143,33 @@ cat knowledge/.sweep/sweep.log            # expect: OK wrote knowledge/<project>
 grep "status: auto" knowledge/*/"$(date +%F)".md
 ```
 
-Failures never interrupt you — they queue in `knowledge/.sweep/pending.log` and retry at the next `/distill`. The model's raw output for each failure is preserved at `knowledge/.sweep/failed/` (most recent 20) for inspection.
+Failures never interrupt you — they queue in `knowledge/.sweep/pending.log` and retry at the next `/distill` (which replays each entry via `--replay`, below). The model's raw output for each failure is preserved at `knowledge/.sweep/failed/` (most recent 20) for inspection.
+
+## Troubleshooting
+
+Start here whenever the skill "looks broken" — most cases are one of the two things `--doctor` checks for directly: `jq` invisible to the hook's shell, or `SWEEP.md` not where `HISTORIAN_SKILL_DIR` expects it.
+
+```bash
+~/.claude/historian/historian-sweep.sh --doctor
+```
+
+Read-only, never touches stdin, exits in under a second. Reports: whether `jq`/`git`/`claude` resolve **in the shell this command is run from** (run it inside a plain Git Bash window, not PowerShell, to match what the hook actually sees), whether `SWEEP.md` is found, the resolved vault path, the last `OK`/`FAIL` line from `sweep.log`, how many entries are queued in `pending.log`, and how many raw failures are preserved in `failed/`. Exits non-zero if it found a problem.
+
+For a quick daily glance instead of the full diagnostic:
+
+```bash
+~/.claude/historian/historian-sweep.sh --status
+```
+
+Prints the last 5 `sweep.log` lines and the pending-queue depth.
+
+To manually retry one queued failure without waiting for `/distill` (the three fields are tab-separated in `knowledge/.sweep/pending.log`: date, transcript path, session id):
+
+```bash
+~/.claude/historian/historian-sweep.sh --replay <transcript-path> <project-dir> <session-id>
+```
+
+This runs the identical validator/writer/committer path a live hook uses, skipping the triviality gate and dedup (a queued entry already earned a sweep), and removes the matching `pending.log` line(s) on success. Exits non-zero and leaves the entry queued if the replay itself fails.
 
 ## Optional config (env vars)
 
@@ -156,7 +189,7 @@ For the hook to see any of these on Windows, set them in `~/.claude/settings.jso
 
 ## Tests
 
-`bash tests/run-tests.sh` from the skill root — 13 end-to-end scenarios driving the real script with a stubbed `claude` binary (no model calls, no cost). Run it after any change to `historian-sweep.sh`, before re-deploying the runtime copy.
+`bash tests/run-tests.sh` from the skill root — 20 end-to-end scenarios (62 assertions) driving the real script with a stubbed `claude` binary (no model calls, no cost). Run it after any change to `historian-sweep.sh`, before re-deploying the runtime copy.
 
 ## Other tools
 

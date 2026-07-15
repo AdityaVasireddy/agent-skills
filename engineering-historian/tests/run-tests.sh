@@ -250,6 +250,113 @@ assert_grep "OK wrote .*repaired=inserted-missing-front-matter-close" "$P/knowle
 assert_grep "^status: auto" "$DF" "T14 case content survived the repair"
 assert_no_file "$P/knowledge/.sweep/pending.log" "T14 nothing queued for retry"
 
+echo "== T15: auto-commit never touches a decoy file staged elsewhere in the repo =="
+P="$(mk_project t15 repo)"; T="$SANDBOX/t15.jsonl"; mk_transcript "$T" 12 0
+printf 'decoy content\n' > "$P/decoy.txt"
+git -C "$P" add decoy.txt
+export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
+run_sweep "$P" "$T" SessionEnd t15-session
+COMMIT_FILES="$(git -C "$P" show --stat -1 --format= HEAD 2>/dev/null)"
+if echo "$COMMIT_FILES" | grep -q "decoy.txt"; then bad "T15 decoy.txt must not appear in the auto-commit"; else ok "T15 decoy.txt absent from auto-commit"; fi
+STAGED="$(git -C "$P" diff --cached --name-only 2>/dev/null)"
+if echo "$STAGED" | grep -q "decoy.txt"; then ok "T15 decoy.txt remains staged after the auto-commit"; else bad "T15 decoy.txt should still be staged, staged files: $STAGED"; fi
+
+echo "== T16: first sweep seeds knowledge/.gitignore and capture-rules.md =="
+P="$(mk_project t16 repo)"; T="$SANDBOX/t16.jsonl"; mk_transcript "$T" 12 0
+export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
+run_sweep "$P" "$T" SessionEnd t16-session
+assert_grep '^\.sweep/$' "$P/knowledge/.gitignore" "T16 .gitignore contains .sweep/"
+assert_grep '## Sweep health' "$P/knowledge/capture-rules.md" "T16 capture-rules.md seeded with Sweep health section"
+COMMIT_FILES="$(git -C "$P" show --stat -1 --format= HEAD 2>/dev/null)"
+if echo "$COMMIT_FILES" | grep -q '\.sweep/'; then bad "T16 .sweep/ must not appear in the auto-commit"; else ok "T16 .sweep/ absent from auto-commit"; fi
+
+echo "== T17: existing case must survive a rewrite, or the old day file is kept =="
+P="$(mk_project t17 repo)"; T="$SANDBOX/t17-a.jsonl"; mk_transcript "$T" 12 0
+export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
+run_sweep "$P" "$T" SessionEnd t17-session-a
+DF="$P/knowledge/$(basename "$P")/$TODAY.md"
+assert_grep "### CASE: fixture-case" "$DF" "T17 setup: initial day file has fixture-case"
+FIX_DROPPED_CASE="$SANDBOX/fix-dropped-case.md"
+cat > "$FIX_DROPPED_CASE" <<EOF
+---
+project: proj
+date: $TODAY
+type: [decision]
+stack: [bash]
+status: test fixture status line, session 2
+---
+
+# Proj — $TODAY
+
+## What I worked on
+Test fixture day file, second session, case dropped by mistake.
+
+## Cases
+None.
+EOF
+T2="$SANDBOX/t17-b.jsonl"; mk_transcript "$T2" 12 0
+export STUB_OUTPUT_FILE="$FIX_DROPPED_CASE"
+run_sweep "$P" "$T2" SessionEnd t17-session-b
+assert_grep "### CASE: fixture-case" "$DF" "T17 old day file kept — case not silently dropped"
+assert_grep "FAIL output would drop an existing case (reason=slug-regression)" "$P/knowledge/.sweep/sweep.log" "T17 slug-regression logged"
+assert_file "$P/knowledge/.sweep/failed/$TODAY-t17-session-b.raw.md" "T17 raw output preserved"
+assert_grep "t17-session-b" "$P/knowledge/.sweep/pending.log" "T17 queued for retry"
+
+echo "== T18: --doctor and --status never touch stdin and exit promptly =="
+P="$(mk_project t18 repo)"
+export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
+START=$(date +%s)
+(cd "$P" && timeout 5 bash "$SCRIPT" --doctor >"$SANDBOX/t18-doctor.out" 2>&1 < /dev/null)
+RC=$?
+END=$(date +%s)
+[ $((END-START)) -lt 5 ] && ok "T18 doctor mode returns promptly" || bad "T18 doctor mode took too long"
+[ "$RC" -eq 0 ] && ok "T18 doctor mode reports OK with tools present" || bad "T18 doctor mode unexpectedly failed (rc=$RC): $(cat "$SANDBOX/t18-doctor.out")"
+
+JQ_PATH="$(command -v jq)"
+if [ -n "$JQ_PATH" ]; then
+  JQ_DIR="$(dirname "$JQ_PATH")"
+  FILTERED_PATH="$(printf '%s' "$PATH" | tr ':' '\n' | grep -vF "$JQ_DIR" | tr '\n' ':')"
+  FILTERED_PATH="${FILTERED_PATH%:}"
+  (cd "$P" && PATH="$FILTERED_PATH" timeout 5 bash "$SCRIPT" --doctor >"$SANDBOX/t18-nojq.out" 2>&1 < /dev/null)
+  RC3=$?
+  assert_grep "jq:.*MISSING" "$SANDBOX/t18-nojq.out" "T18 doctor detects missing jq"
+  [ "$RC3" -ne 0 ] && ok "T18 doctor exits non-zero when jq missing" || bad "T18 doctor should exit non-zero when jq missing"
+else
+  bad "T18 could not locate jq on test-runner PATH to exercise the missing-jq path"
+fi
+
+timeout 5 bash "$SCRIPT" --status < /dev/null >/dev/null 2>&1
+[ $? -eq 0 ] && ok "T18 status mode returns promptly" || bad "T18 status mode failed or hung"
+
+echo "== T19: --replay processes a queued pending.log entry deterministically =="
+P="$(mk_project t19 repo)"; T="$SANDBOX/t19.jsonl"; mk_transcript "$T" 12 0
+export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=1
+run_sweep "$P" "$T" SessionEnd t19-session
+assert_grep "t19-session" "$P/knowledge/.sweep/pending.log" "T19 setup: failure queued to pending.log"
+export STUB_EXIT=0
+bash "$SCRIPT" --replay "$T" "$P" t19-session
+RC=$?
+DF="$P/knowledge/$(basename "$P")/$TODAY.md"
+[ "$RC" -eq 0 ] && ok "T19 replay exits 0 on success" || bad "T19 replay expected exit 0, got $RC"
+assert_file "$DF" "T19 replay wrote the day file"
+assert_no_grep "t19-session" "$P/knowledge/.sweep/pending.log" "T19 pending.log entry removed after successful replay"
+bash "$SCRIPT" --replay "$T" "$P" t19-session
+[ "$(grep -c '^### CASE: fixture-case' "$DF")" -eq 1 ] && ok "T19 second replay does not duplicate the case" || bad "T19 expected exactly 1 fixture-case block, got $(grep -c '^### CASE: fixture-case' "$DF")"
+
+echo "== T20: commit is skipped (not silently swallowed) during a merge in progress =="
+P="$(mk_project t20 repo)"; T="$SANDBOX/t20.jsonl"; mk_transcript "$T" 12 0
+GITDIR="$P/.git"
+touch "$GITDIR/MERGE_HEAD"
+HEAD_BEFORE="$(git -C "$P" rev-parse HEAD)"
+export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
+run_sweep "$P" "$T" SessionEnd t20-session
+DF="$P/knowledge/$(basename "$P")/$TODAY.md"
+assert_file "$DF" "T20 day file still written despite merge in progress"
+assert_grep "SKIP commit: git operation in progress" "$P/knowledge/.sweep/sweep.log" "T20 commit skip logged"
+HEAD_AFTER="$(git -C "$P" rev-parse HEAD)"
+[ "$HEAD_BEFORE" = "$HEAD_AFTER" ] && ok "T20 no commit created during merge in progress" || bad "T20 HEAD moved despite merge in progress"
+rm -f "$GITDIR/MERGE_HEAD"
+
 echo
 echo "======================================"
 printf 'RESULT: %s passed, %s failed\n' "$PASS" "$FAIL"
