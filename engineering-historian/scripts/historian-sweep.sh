@@ -542,7 +542,13 @@ doctor_mode() {
   fi
 
   local pending=0
-  [ -f "$sweepdir/pending.log" ] && pending="$(grep -c . "$sweepdir/pending.log" 2>/dev/null || echo 0)"
+  if [ -f "$sweepdir/pending.log" ]; then
+    # grep -c always prints a count line even on zero matches (and exits 1 in
+    # that case) — `|| echo 0` on the whole substitution would then append a
+    # second "0" line instead of replacing the first. Trust the printed count.
+    pending="$(grep -c . "$sweepdir/pending.log" 2>/dev/null)"
+    pending="${pending:-0}"
+  fi
   echo "pending queue: $pending entries (retry with: $0 --replay <transcript> <cwd> <session-id>, or via /distill)"
 
   local failed=0
@@ -572,7 +578,10 @@ status_mode() {
   echo "== Last 5 sweep.log lines ($sweepdir/sweep.log) =="
   tail -5 "$sweepdir/sweep.log"
   local pending=0
-  [ -f "$sweepdir/pending.log" ] && pending="$(grep -c . "$sweepdir/pending.log" 2>/dev/null || echo 0)"
+  if [ -f "$sweepdir/pending.log" ]; then
+    pending="$(grep -c . "$sweepdir/pending.log" 2>/dev/null)"
+    pending="${pending:-0}"
+  fi
   echo "pending: $pending"
 }
 
