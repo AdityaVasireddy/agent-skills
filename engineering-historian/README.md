@@ -29,6 +29,23 @@ captured; when in doubt, it captures. Details in
 [`CHANGELOG.md`](./CHANGELOG.md) and
 [`docs/adr/ADR-001-capture-gate-triviality.md`](./docs/adr/ADR-001-capture-gate-triviality.md).
 
+**v3.1.2** is Phase 1 of a production-readiness review, run ahead of
+the 60-day evaluation. Nothing changes in what is captured, promoted,
+retrieved, or stored — this closes gaps in the automation layer
+itself: the auto-commit is now pathspec-limited to `knowledge/` and
+skips (with a log line) during any merge/rebase/cherry-pick/bisect,
+instead of committing a user's entire staged index under a
+`history(auto):` message; an existing case can no longer be silently
+dropped by a day-file rewrite (every `### CASE:` on disk must survive,
+or the old file is kept and the run is queued for retry); and the
+vault's own documented guarantees — `.sweep/` gitignored,
+`capture-rules.md` seeded on first touch — are now actually true
+instead of just claimed. It also adds a way to check the sweep
+without waiting for a hook to fire: `--doctor` (read-only health
+check), `--status` (queue + log tail), and `--replay` (deterministic
+retry of one queued transcript, replacing hand-improvised recoveries).
+62/62 tests passing. Full entry in [`CHANGELOG.md`](./CHANGELOG.md).
+
 No database. No embeddings. No dashboard. Just markdown + git.
 
 One thing to know up front: the hook fires only when Claude Code
