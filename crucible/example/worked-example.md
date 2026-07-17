@@ -1,166 +1,196 @@
-# Worked example — a full Crucible run
+# Worked example — a full Crucible v2 session
 
-A sample idea, run end to end. The point isn't the verdict; it's the
-*shape* — five independent attacks, then one decisive call ending in a
-test you could run this weekend. The idea below is invented for
-illustration.
-
----
-
-## The Brief
-
-> **PlateShare** — a subscription meal-prep service for people with
-> chronic kidney disease (CKD), who must track potassium, phosphorus,
-> and sodium tightly. $95/week for 10 renal-dietitian-designed meals,
-> delivered. Buyer: CKD patients (stages 3–4) not yet on dialysis, and
-> their caregivers. Founder's edge: a registered renal dietitian with
-> 12 years in a nephrology clinic and a 4,000-person patient email
-> list. Constraint: $15k budget, needs first revenue within 60 days.
-
-Every persona below judged this exact paragraph, independently.
+One venture, run end to end, plus the opening of the follow-up
+session — because the follow-up is where v2 differs most from a
+one-shot verdict tool. The idea is invented for illustration.
 
 ---
 
-## The Council
+## Stage 1 — Input
 
-### Contrarian — 4/10
-**Stance:** This dies on unit economics before it dies on demand.
+Founder's pitch, condensed to the neutral Brief (adjectives
+stripped), plus the two intake facts v2 always collects:
 
-Renal meal prep is a logistics nightmare priced like a commodity.
-$95/week for 10 cold-chain meals designed to lab-grade nutrient
-tolerances leaves almost nothing after food cost, renal-specialty
-ingredients, insulated shipping, and spoilage. The fatal assumption is
-that "dietitian-designed" commands a premium — but the buyer is a
-chronically ill patient often on fixed income, and the real
-competitor is free (a caregiver cooking from a printed renal-diet
-sheet). One food-safety incident with an immunocompromised population
-is an extinction event, not a bad review.
-**Must hear:** Your margin and your liability are the same problem —
-both come from serving a fragile population a perishable product at a
-mass-market price.
+> **PlateShare** — subscription meal delivery for people with chronic
+> kidney disease (CKD stages 3–4, pre-dialysis), who must track
+> potassium, phosphorus, and sodium. $95/week for 10 meals designed
+> by a renal dietitian. Buyer: patients and their caregivers, out of
+> pocket. Founder: a registered renal dietitian, 12 years in a
+> nephrology clinic, 4,000-person patient email list. Budget $15k;
+> wants first revenue within 60 days.
+>
+> **Goal:** lifestyle business (replace clinic salary). **Affordable
+> loss:** $8k and 4 months before needing income again.
 
-### Expansionist — 8/10
-**Stance:** The meals are the wedge; the patient relationship is the
-company.
+Scope gate: customer and revenue path exist — in scope.
 
-Forget competing with meal kits. A renal dietitian with clinical
-credibility and a 4,000-patient list is sitting on the highest-trust
-position in a market where trust is everything. Meals get you in the
-door; the 10x version is the CKD-management platform — nutrient
-tracking, nephrologist-shareable reports, medication-timing reminders,
-insurance/Medicare reimbursement pathways (renal nutrition counseling
-is often covered). Payers desperately want to slow the progression to
-dialysis, which costs them ~$90k/year/patient. That's the real buyer.
-**Must hear:** The meal service is a Trojan horse for a reimbursable
-disease-management business — build toward the payer, not the pantry.
+## Stage 2 — Interrogation
 
-### Logician — 5/10
-**Stance:** The core mechanism is sound; the pricing model contradicts
-the buyer.
+**Skeptic** — What does one delivered meal cost you, all-in: renal
+ingredients, cold-chain shipping, spoilage? What's your liability
+exposure if an immunocompromised customer gets a food-safety
+incident? What does the patient do today for $0 — and why is that not
+enough?
 
-First principles: CKD nutrient management is genuinely hard, genuinely
-matters, and is genuinely underserved — the need is real and the
-founder can actually meet it. But the incentives misalign at the
-price. The party who benefits most from slowed CKD progression (the
-payer) is not the party being charged (the patient). Charging the
-poorest, sickest party out of pocket for something a wealthier party
-would pay to prevent is an economic inversion. The mechanism works;
-the money is pointed at the wrong wallet.
-**Must hear:** The unit math can't close against out-of-pocket
-patients — whoever benefits from prevention should be who pays.
+**Operator** — Of your 4,000 emails, how many opened anything in the
+last 90 days? Who cooks, packs, and ships week one — you? What in
+your 12 clinical years maps to logistics work, and what's your plan
+for the part that doesn't?
 
-### Researcher — 6/10
-**Stance:** The category exists and is validated; direct-pay renal
-delivery is where others stalled.
-*(No web search this run — all claims below unverified; confirm before
-acting.)*
+**Buyer** *(as a stage-3 patient, 61, fixed income)* — I already get
+a renal-diet sheet from my clinic and my daughter cooks Sundays. What
+does $380/month get me that costs me nothing today? Would my
+nephrologist tell me to buy this? — And the 3 questions to ask 5 real
+patients this week: (1) "What did you eat last Tuesday, and how did
+you decide it was safe?" (2) "What do you currently pay for anything
+diet-related?" (3) "If this existed at $95/week, what would you give
+up to afford it?"
 
-Medically-tailored meal (MTM) delivery is an established category with
-published payer-side outcome studies behind it — that de-risks the
-"does this help" question. Renal-specific players and MTM providers
-exist. The pattern worth noting: the ventures that scaled did it
-through health-plan and Medicaid contracts, not consumer subscriptions;
-the direct-to-consumer renal-meal attempts are where the graveyard is.
-Comparable MTM per-meal economics tend to run above this $9.50/meal
-price once true cold-chain renal formulation is included.
-**Must hear:** The evidence base is your friend and the go-to-market of
-your closest successful comparables is *not* the one in this brief.
+The founder can answer the clinical questions cold; the food-cost,
+list-engagement, and liability questions come back vague. Those go in
+as `HOPE`.
 
-### Buyer — 4/10
-**Stance:** (as a stage-3 CKD patient, 61, fixed income) I want this
-and I can't afford it.
+**The Assumption Stack**
 
-Honestly? I'm scared of my next lab result and I hate guessing whether
-I can eat a banana. So the pitch lands emotionally. But $95 a week is
-$380 a month on top of my medications, and I'm already watching every
-dollar. My daughter cooks for me on Sundays using the sheet the clinic
-gave me — it's free and it's love, even if it's a hassle. What would
-make me say yes today isn't a nicer menu; it's my nephrologist saying
-"insurance covers this" or "this keeps you off dialysis." Absent that,
-I'll say "that sounds wonderful" and never buy.
-**Must hear:** "Sounds wonderful" from me is a no. Get my doctor or my
-insurance to say it and it's a yes.
+| # | Assumption | Status | Evidence / source |
+|---|---|---|---|
+| 1 | CKD nutrient management is hard and matters | KNOW | 12 years clinical practice |
+| 2 | The founder can design compliant meals | KNOW | Credential + practice |
+| 3 | Patients will pay $95/week out of pocket | HOPE | No purchase evidence; list has never been sold to |
+| 4 | $95/week leaves a viable margin after cold-chain delivery | HOPE | Founder has no all-in cost number |
+| 5 | The 4,000-person list is a live channel | BELIEVE | List exists; engagement unknown |
+| 6 | Free substitute (clinic sheet + family cooking) won't retain the customer | BELIEVE | Clinical intuition, no data |
+| 7 | Food-safety liability is insurable at small scale | HOPE | Unexamined |
+
+## Stage 3 — Bench
+
+**Arithmetic (founder's own numbers):** $95 ÷ 10 = $9.50/meal.
+Founder's guessed food cost $4.50 + insulated shipping $18–25/box
+(≈ $2/meal) + packaging + spoilage buffer → $7–8/meal *before* labor,
+kitchen, insurance. Margin per meal ≈ $1.50–2.50, i.e. ≤ $25/week per
+customer before the founder pays herself. To replace a clinic salary
+(~$6k/month) needs ≈ 240+ steady subscribers — from a 4,000-person
+list of unknown engagement. The math *can* close only if assumptions
+4 and 5 both break favorably.
+
+**Incentive map:** the party that saves money when CKD progression
+slows (the insurer, ~$90k/patient/year on dialysis) is not the party
+being charged (a fixed-income patient). Charging the poorest
+stakeholder for a benefit that accrues to the richest is an incentive
+inversion — the strongest structural finding on the stack.
+
+**Verdict: `BROKEN-BECAUSE`:**
+- **B1 — margin arithmetic does not close** at $95/10 meals on the
+  founder's own cost guesses → *fixable-by-evidence* (real cost
+  quote) **and** by redesign (price, meal count, or payer).
+- **B2 — incentive inversion:** payer ≠ beneficiary →
+  *fixable-only-by-redesign* (someone other than the patient pays:
+  insurer, Medicare renal-nutrition coverage, or family as buyer).
+
+**Risk ranking (recommendation, non-binding):** #3 willingness to
+prepay → #4 true unit cost → #5 list liveness → #7 liability → #6
+retention vs. free.
+
+## Stage 4 — Evidence
+
+*(This run had no web search — so nothing below is VERIFIED, and the
+session says so.)*
+
+- `RECALL — confirm before acting:` medically-tailored-meal companies
+  that scaled did so through health-plan and Medicaid contracts, not
+  direct-to-consumer subscriptions.
+- `RECALL — confirm before acting:` Medicare covers medical nutrition
+  therapy for CKD when referred — a reimbursement path relevant to B2.
+- `REASONED:` a caregiver cooking from the clinic's free sheet is a
+  substitute with zero cost and an emotional moat; retention risk #6
+  is real even if trial succeeds.
+
+No stack promotions this session — evidence added leads, not proof.
+
+## Stage 5 — Experiment
+
+**Target:** assumption #3 (prepayment) — riskiest, and it
+simultaneously tests #5 (list liveness) for free.
+
+**Design:** email a segment of 800 from the list: a 2-week
+manually-cooked renal meal pilot, 15 spots, at the real $95/week
+price, "reply and prepay to claim a spot." Manual cooking only if
+money arrives — zero build.
+
+**Threshold (declared now):** ≥ 15 prepayments from 800 emails =
+pass. **Cost cap:** < $500 and 10 days — well inside affordable loss.
+
+**On the record — the founder:**
+- **Prediction:** "I expect 25–30 people to try to prepay."
+- **Pre-commitment:** "If fewer than 15 prepay, I will stop pursuing
+  patient-paid subscriptions and spend two weeks investigating the
+  Medicare/insurer route (B2's redesign) before spending anything
+  else."
+
+## Stage 6 — Ledger (written to `.crucible/plateshare.md`)
+
+```markdown
+# Crucible ledger — PlateShare
+Goal: lifestyle · Affordable loss: $8k / 4 months
+Sessions: 1 · Predictions scored: 0/0
+
+## Assumption stack
+| # | Assumption | Status | Evidence / source | Last change |
+| 1 | CKD nutrition is hard/matters | KNOW | 12y practice | S1 |
+| 3 | Patients prepay $95/wk | HOPE | none — E1 pending | S1 |
+| 4 | Margin viable at $95/10 | HOPE | founder guess; math ≈$2/meal | S1 |
+| … | | | | |
+
+## Experiments
+### E1 — S1
+Assumption: #3 · Design: 800-email prepaid pilot, 15 spots ·
+Threshold: ≥15 prepay · Cost: <$500 / 10 days
+Prediction: 25–30 prepay · Pre-commitment: <15 ⇒ stop patient-paid,
+investigate payer route · Result: pending
+
+## Session log
+S1: Bench=BROKEN-BECAUSE (B1, B2) · Evidence tiers
+VERIFIED/RECALL/REASONED=0/2/1
+
+## Open questions
+- All-in cost per delivered meal (get a real quote)
+- 90-day list engagement rate
+- Liability insurance cost at pilot scale
+```
+
+**Sharpest unanswered question:** what does one delivered meal
+actually cost you? (You are three months from betting your savings on
+a number you haven't looked up.)
 
 ---
 
-## THE VERDICT: RESHAPE
-Confidence: medium
+## Session 2, three weeks later — the part v1 couldn't do
 
-**The call in one line:** Real need, credible founder, right instinct —
-but the out-of-pocket consumer model is upside down; pivot the payer
-before building the kitchen.
+Founder returns: **9 prepayments** from 800 emails.
 
-**Why:** The council's split is Expansionist-vs-everyone, and it
-resolves cleanly because they're not actually disagreeing about the
-idea — they're disagreeing about the *customer*. The Logician and Buyer
-both hit the same veto-level flaw (the sickest, poorest party is being
-asked to pay out of pocket), and the Buyer score of 4 plus a
-misaligned-incentive finding can't be outvoted into a GO. But the
-Expansionist and Researcher independently point at the same fix — the
-payer — which is what turns this from KILL into RESHAPE.
+The session opens with the score, before any analysis:
 
-**Biggest risk:** Direct-pay unit economics against a free substitute
-(a caregiver with a diet sheet) for a fixed-income buyer — the model
-loses money and the customer won't pay.
-**Biggest upside:** A trusted clinician with a 4,000-patient list is
-uniquely positioned to build a reimbursable CKD-management business
-that payers will fund to avoid $90k/year dialysis costs.
+> **Prediction scored:** you predicted 25–30; reality returned 9.
+> Predictions: 0/1. Your confidence in patient demand ran ~3× ahead
+> of the market — worth remembering the next time a forecast of
+> yours feels obvious.
+>
+> **Pre-commitment check:** below threshold. You said you'd stop
+> pursuing patient-paid subscriptions and spend two weeks on the
+> payer route. Is that what you're doing?
+>
+> **Stack updates:** #3 patient-prepay → *demoted, evidence against*
+> (9/800 at threshold 15). #5 list liveness → *promoted to KNOW* —
+> the list is real (9 strangers prepaid ~$200 each off one email);
+> the channel works, the offer doesn't. That combination is exactly
+> what the payer-route redesign (B2) needs: a live patient panel is
+> an asset an insurer pilot can be built on.
 
-**Money read:** ~$9.50/meal barely clears cost at consumer scale ·
-60-day first revenue is realistic only via a manual concierge cohort,
-not a launched subscription · the founder's clinical credibility lets
-her ship a *pilot* fast, but a payer contract is a long sale.
+Then the loop continues: Bench re-ranks, and E2 targets the payer
+route — one expert call with a health-plan care-management contact,
+threshold declared, prediction on the record.
 
-**The cheapest 48-hour test:** Email a single, specific offer to a
-segment of the 4,000-person list: a 2-week manually-prepared renal meal
-pilot at a real price, "reply to claim one of 15 spots." Declare the
-threshold *before* sending: **≥15 replies that include a card on file /
-prepayment** = signal to build the concierge version; fewer = the
-direct-pay model is confirmed dead and the pivot must go payer-first
-*before* any further build. This targets the riskiest assumption (will
-this buyer actually pay out of pocket), is behavioral (prepayment, not
-"would you?"), falsifiable (15, pre-declared), and needs zero product —
-15 meals cooked by hand only if the money shows up.
-
-**If RESHAPE:** Keep the meals as the credibility wedge, but point the
-business at reimbursement — run the concierge pilot to prove
-engagement and outcomes, then use that data to pursue Medicare renal
-nutrition counseling coverage and health-plan contracts. The patient
-gets the meals; the payer pays the bill.
-
-Contrarian 4/10 · Expansionist 8/10 · Logician 5/10 · Researcher 6/10 · Buyer 4/10
-
----
-
-## What the council changed
-
-A single agile "is this a good idea?" prompt to a generic model would
-likely have said yes — credible founder, real need, warm list, all
-true. The council's value is that the Logician and Buyer, reasoning
-*independently*, converged on the same fatal flaw the enthusiasm was
-hiding: right idea, wrong wallet. And because the personas can't see
-each other, that convergence is signal, not groupthink — two blind hits
-on the same weak point is exactly what the independence rule exists to
-surface. The founder walks away not with a "no," but with the one test
-that tells them which business they're actually in — for the price of
-15 emails.
+Note what the founder has after two sessions: not a verdict — a
+scored calibration record, a stack where hope is turning into
+knowledge, one dead assumption that cost $0 to kill, and one live
+asset (the list) they didn't know they'd proven. That is the product.

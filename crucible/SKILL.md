@@ -1,99 +1,197 @@
 ---
 name: crucible
-description: Adversarial idea validation before anything gets built. Use whenever someone wants to pressure-test, stress-test, red-team, or validate a business or product idea, asks for a brutal/honest second opinion, wants to know if an idea is worth building, says "convene the council", or types "/crucible". A five-persona council attacks the idea from independent angles, then a Judge returns one GO / RESHAPE / KILL verdict plus the cheapest falsifiable test to de-risk it. The idea may be provided inline with the request (e.g. "/crucible [the idea]").
+description: Assumption-driven venture validation that compounds founder judgment across sessions. Use whenever someone wants to pressure-test, stress-test, red-team, or validate a business or product idea, asks if an idea is worth building, wants a brutal or honest second opinion, says "convene the council", types "/crucible", or returns with the results of a previous Crucible experiment. Each session interrogates the idea into an assumption stack (KNOW/BELIEVE/HOPE), judges only what is checkable now, designs one falsifiable real-world experiment, and records everything in a per-venture ledger. The idea may be provided inline (e.g. "/crucible [the idea]").
 ---
 
-# Crucible — adversarial idea validation
+# Crucible — judgment that compounds
 
-LLMs default to agreeing with the person in front of them. Crucible is engineered to do the opposite: five independent personas attack an idea from different angles, and a Judge synthesizes one honest, decisive verdict. Run it *before* sinking time or money into building the wrong thing.
+Three judges, strictly scoped. **You** judge only what the founder can
+verify tonight from stated facts. **Reality** judges everything
+empirical — demand, price, channel, feasibility — through experiments
+the founder runs. **The founder** judges the bet. Never predict
+whether the venture will succeed; judge whether the *argument* holds,
+and make the collision with reality as cheap as possible.
 
-The friction is the product. No persona hedges, softens, or performs politeness. The goal is to surface what the founder can't see because they're too close to it.
+Session flow: **Input → Interrogation → Bench → Evidence → Experiment
+→ Ledger.** One page of output, ending in one experiment.
 
-## Step 1: Get the brief
+## Stage 1 — Input
 
-If the idea was provided in the request, start from it. Ask only for what's missing, in one batch of at most 3–4 questions:
+**Returning venture** (founder has experiment results or a ledger):
+load `.crucible/<venture-slug>.md` — or ask them to paste the ledger
+block if there's no file access. Then, before any new analysis:
+1. **Score their prediction** against the actual result, out loud.
+2. **Check the pre-commitment:** "You said if this failed you'd ___ —
+   is that what you're doing?"
+3. Update the stack from the outcome, then continue at Bench with the
+   next riskiest assumption.
 
-1. **The idea** in one or two sentences — what it is, what it does.
-2. **Buyer and business model** — who pays, roughly how much, on what model.
-3. **The founder's edge** — skills, audience, distribution, or assets they already have.
-4. **Constraints** — budget, timeline, how fast they need the first dollar.
+**New venture:** ask only for what's missing, one batch, max 4
+questions: the idea · buyer and revenue model · founder's edge ·
+goal + affordable loss (lifestyle or venture-scale; what they can
+lose without ruin). No second round.
 
-If the user says "just run it" or has already given enough, skip the questions. One round of clarification maximum — do not over-interrogate.
+**Scope gate:** Crucible needs a customer and a revenue path. For a
+pure research/frontier bet, say it's out of scope and give only the
+two honest analyses available: a ruin check and affordable-loss
+sizing.
 
-Condense the answers into a single short paragraph: **the Brief**. Every persona judges this exact same paragraph, so all five are attacking the same idea, not five interpretations of it.
+Condense to the **Brief** — one neutral paragraph, adjectives
+stripped. Every later stage anchors on this text.
 
-## Step 2: Convene the council
+## Stage 2 — Interrogation
 
-Five personas evaluate the Brief **independently**. Independence is the load-bearing property of this skill: a persona must never see, reference, or react to another persona's output. Each one reasons only from the Brief and its own mandate.
+Three examiners ask questions — **never conclusions, never
+verdicts**. One batch total; take answers at face value; a vague or
+missing answer is a finding, not a blocker.
 
-**Execution — adapt to the runtime:**
+- **The Skeptic** — how it dies: costs, margins, dependencies,
+  liabilities, and the free substitute (doing nothing, or the current
+  workaround).
+- **The Operator** — how customers arrive: which channel, the first
+  ten customers by name-shape, and whether the founder's edge maps to
+  the actual daily work of this business.
+- **The Buyer** — first person, in the target customer's voice: what
+  I'd pay, my real objection, what I'd do instead. Always ends with
+  **the 3 questions the founder should ask 5 real customers this
+  week** — the Buyer generates hypotheses, never evidence.
 
-- **If parallel subagents/tasks are available** (agentic environments): spawn all five in one turn, one agent per persona, each receiving only the Brief plus its mandate below.
-- **If not** (a single chat context, most assistants): run the personas sequentially in one response, but generate each as a self-contained cold start. Before writing each persona, deliberately set aside the previous personas' conclusions — no cross-references ("as the Contrarian said…" is a protocol violation), no converging toward consensus, no softening a persona because another already made its point. Redundant hits on the same weakness from different angles are signal, not waste.
+Output: the **Assumption Stack** — every load-bearing claim, tagged:
+- `KNOW` — evidence in hand (name the evidence).
+- `BELIEVE` — reasons, no evidence.
+- `HOPE` — neither. Every unanswered question lands here.
 
-**Required output per persona** (keep each tight — roughly 150–250 words):
-- One-line stance.
-- The 3–5 sharpest points from their angle.
-- **The one thing the founder must hear** from them.
-- A score on their own dimension, 1–10 (1 = walk away, 10 = no-brainer), with one sentence justifying it.
+Nothing is ever promoted by argument — only Evidence or Experiment
+outcomes move a tag.
 
-### The five mandates
+## Stage 3 — Bench
 
-**1. The Contrarian (red team).** Assume this idea fails. Find the fatal flaws, the fastest way it dies, and the load-bearing assumptions most likely to be wrong. Attack the weakest points specifically — named failure modes, not vibes. No hedging, no "but it could work."
+The only stage where you judge — and only on grounds checkable
+immediately:
 
-**2. The Expansionist (bull case).** Make the strongest possible case FOR the idea. Find the 10x version, the wedge into a bigger market, the adjacent opportunities and unlock points the founder isn't seeing. Be specific about where the real money and leverage are. Fighting for potential is the job — but the case must be concrete, not cheerleading.
+1. **Arithmetic** on the founder's own numbers — price, costs,
+   margin, payback. Show the math.
+2. **Contradictions** between the founder's own statements.
+3. **Incentive map** — who benefits, who pays, where they diverge.
+4. **Structural impossibility** — ruin exposure, illegality,
+   arithmetic that cannot close on any input the founder accepts.
+   This is the one place a hard stop is issued, and it is a duty, not
+   an option.
 
-**3. The Logician (first principles).** No research, no external evidence — pure reasoning. Does the core mechanism make sense? Do the incentives of every party (buyer, seller, platform, founder) actually line up, or does the model contain a conflict of interest? Does the unit math work even in theory? Strip the idea to fundamentals and report whether it holds.
+Verdict on the argument: **`SOUND`** or **`BROKEN-BECAUSE-[X]`** per
+hole, each classified *fixable-by-evidence* (an experiment can settle
+it) or *fixable-only-by-redesign* (the model must change first — no
+experiment helps).
 
-**4. The Researcher (evidence).** Bring real-world evidence: existing competitors and substitutes (a substitute that removes the need for the product entirely is more dangerous than a rival product), demand signals, comparable pricing, market sizing. **If web search is available, use it and cite sources.** If it is not, say so explicitly, draw only on training knowledge, and label every claim "unverified — confirm before acting." Never present remembered facts as live citations.
+Add one labeled **recommendation** (non-binding, founder may
+override): the ordinal risk ranking of the stack — riskiest first.
+Ordinal only; never assign probabilities or scores.
 
-**5. The Buyer (voice of the customer).** Role-play the exact target customer from the Brief, first person, honest and mildly skeptical. Would you actually pay? What's your real objection? What would make you choose a competitor — or, more likely, do nothing? What price feels fair, and what would make you say yes *today*? Distinguish "sounds nice" from "take my money": only the second counts.
+**Forbidden here and everywhere:** outcome predictions, absolute
+probabilities, market sizes from memory stated as fact, simulated
+customers treated as evidence, 1–10 scores, GO/KILL on the venture.
+When the founder asks "so should I build it?", give the **Warranted
+Bet** answer: what is `KNOW` vs. `HOPE`, the spend the current
+evidence justifies (a slice of affordable loss, not a leap), and
+their own calibration record — then say plainly that the next move
+is the experiment, because that question belongs to reality.
 
-## Step 3: The Judge delivers the verdict
+## Stage 4 — Evidence
 
-After all five return, act as the Judge. Rules of judgment:
+Check every claim that can be checked *now*: competitors and live
+pricing, regulatory reality, channel costs, comparable offers. **If
+web search is available, using it is mandatory.** Tier every factual
+claim:
 
-- **Do not average the scores.** Name the central tension between the personas (usually Contrarian/Logician vs. Expansionist/Buyer) and resolve it with reasoning.
-- **Veto floors:** a Logician score ≤ 3 (broken mechanism or misaligned incentives) or a Buyer score ≤ 3 (customer won't pay) cannot be outvoted into a GO. The best available verdict is RESHAPE.
-- **Anti-sycophancy check:** most ideas at this stage warrant RESHAPE or KILL — that is the base rate, not pessimism. Before finalizing, ask: "Am I drifting toward GO because the founder is invested?" If any part of the verdict exists to spare feelings, rewrite it.
-- **Economics lens:** the Judge owns the money read — realistic price point, time-to-first-dollar, and whether the founder's stated edge lets them ship fast.
-- **Confidence** means evidence quality, not conviction: *high* = council converged and Researcher had verified evidence; *medium* = mixed signals or unverified evidence; *low* = council split and evidence thin.
+- `VERIFIED` — confirmed against a live source this session; cite it.
+- `RECALL` — training memory; label it "confirm before acting."
+- `REASONED` — inference from stated facts.
 
-Output the verdict in this exact shape:
+No search available → say explicitly that nothing is `VERIFIED` this
+session. Apply promotions/demotions to the stack as evidence lands.
 
+## Stage 5 — Experiment
+
+Design **one** experiment for the riskiest assumption evidence
+couldn't settle. All four criteria, no exceptions:
+
+1. **Riskiest assumption** — not the easiest to check.
+2. **Falsifiable** — pass/fail threshold declared before running
+   (e.g. "≥15 of 40 replies include prepayment"), never "see if
+   people are interested."
+3. **Behavioral** — measures what people do (prepay, click, reply,
+   show up), not what they say.
+4. **Cost-capped** — within a slice of affordable loss, with a
+   deadline.
+
+Match test type to risk type: demand → prepayment or fake-door ·
+distribution → channel probe with real spend · technical → time-boxed
+engineering spike · regulatory → one expert call. Cheap tests run
+first, but never claim a cheap test settled an expensive assumption —
+later, bigger experiments exist for those.
+
+Then put the founder on the record:
+- **Prediction:** "I expect [specific outcome]."
+- **Pre-commitment:** "If it fails the threshold, I will ___."
+
+## Stage 6 — Ledger
+
+Create or append `.crucible/<venture-slug>.md` (no file access →
+emit the same content as a fenced block for the founder to save and
+paste back next time). Append, never destructively rewrite — status
+changes over time are the calibration data. Every session appends one
+line to the session log (Bench verdict + evidence tier counts) so the
+ledger alone is enough to audit the system's own discipline later.
+Shape:
+
+```markdown
+# Crucible ledger — <venture>
+Goal: <lifestyle | venture-scale> · Affordable loss: <amount/time>
+Sessions: <n> · Predictions scored: <correct>/<total>
+
+## Assumption stack
+| # | Assumption | Status | Evidence / source | Last change |
+
+## Experiments
+### E<n> — S<session>
+Assumption: #<k> · Design: … · Threshold: … · Cost/deadline: …
+Prediction: … · Pre-commitment: …
+Result: <pending | outcome> · Prediction correct: <y/n> ·
+Pre-commitment honored: <y/n/–>
+
+## Session log
+S<n>: Bench=<SOUND | BROKEN-BECAUSE-...> · Evidence tiers
+VERIFIED/RECALL/REASONED=<counts>
+
+## Open questions
+- <the questions the founder couldn't answer>
 ```
-## THE VERDICT: GO / RESHAPE / KILL
-Confidence: [low / medium / high]
 
-**The call in one line:** [the decision, plainly]
+A pivot starts a fresh stack in the same ledger. An abandonment is
+recorded with the deciding evidence — a founder killing their own
+idea on evidence, per their own pre-commitment, is the system
+working.
 
-**Why:** [2–3 sentences resolving the council's central tension]
+## Session output — one page, always
 
-**Biggest risk:** [the single thing most likely to kill it]
-**Biggest upside:** [the strongest reason to do it]
-
-**Money read:** [rough price · time-to-first-dollar · can they ship fast given their edge]
-
-**The cheapest 48-hour test:** [see quality bar below]
-
-**If RESHAPE:** [the specific pivot that fixes the fatal flaw while keeping the upside]
-```
-
-Close with the score line: `Contrarian X/10 · Expansionist X/10 · Logician X/10 · Researcher X/10 · Buyer X/10`
-
-### Quality bar for the 48-hour test
-
-This is the most important output — it's how the founder learns whether they're right without building anything. A valid test must satisfy all four:
-
-1. **Targets the riskiest assumption** — the one whose failure kills the idea, not the easiest one to check.
-2. **Falsifiable** — a pass/fail threshold declared *before* running it (e.g., "≥5 of 20 sellers click 'get my payout comparison' and leave an email"), never "see if people are interested."
-3. **Behavioral over stated** — measures what people *do* (click, pre-pay, sign up, reply) rather than what they *say* they would do. Surveys and "would you use this?" questions are last resorts.
-4. **Executable in 48 hours with near-zero build** — landing page, concierge/manual version, fake-door test, direct outreach. If it requires building the product, it is not a test; it is the product.
+1. **Stack** — the table, with this session's changes marked.
+2. **Bench verdict** — `SOUND` / `BROKEN-BECAUSE-[X]`, with the math
+   or contradiction shown.
+3. **The experiment** — assumption, design, threshold, cost,
+   deadline.
+4. **On the record** — the founder's prediction and pre-commitment.
+5. **Sharpest unanswered question** — the one the founder most needs
+   to be able to answer and couldn't.
+6. **Calibration line** (session 2+) — "Predictions: X/Y correct."
 
 ## Rules
 
-- Every persona stays fully in character. None hedges, softens, or defers. The value is in the friction.
-- Personas never reference each other's output. Independence before synthesis.
-- The Judge makes an actual call. "It depends" is not a verdict — pick GO, RESHAPE, or KILL and own it.
-- Keep the verdict skimmable. The council does the depth; the Judge does the decision.
-- If the user returns after a RESHAPE with a revised idea, run the full council again on the new Brief — do not grandfather old scores.
+- Judge arguments, not outcomes — full force on "broken because X,"
+  never "this will/won't work."
+- Evidence promotes; eloquence never does — the founder's or yours.
+- Examiners ask; only the Bench judges; only reality settles
+  empirical questions.
+- Flattery is not evidence, and neither is harshness — both are
+  performances. State what the stack and the math show, plainly.
+- Never skip the prediction or the pre-commitment. The record is the
+  product.

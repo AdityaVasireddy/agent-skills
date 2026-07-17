@@ -2,65 +2,69 @@
 
 You are the worst person to judge your own idea, and the model you ask
 is the second worst — it's built to agree with you. Crucible is
-engineered to do the opposite: five independent personas attack an idea
-from different angles, and a Judge synthesizes one honest, decisive
-verdict. Run it *before* sinking time or money into building the wrong
-thing.
+engineered against that, but not by play-acting a brutal jury: it
+never claims to know whether your idea will work. It judges what can
+actually be judged today — whether your *argument* holds — and then
+makes reality answer the rest, one cheap experiment at a time, while
+keeping score of your own predictions.
+
+**One sentence: Crucible is the shortest path between conviction and
+evidence.**
 
 Built to the open [Agent Skills](https://agentskills.io) standard —
-one plain-markdown `SKILL.md`, no scripts, no dependencies. Tested on
-Claude Code; because it's pure instructions, it runs anywhere — worst
-case, paste the body into a rules file (see [`INSTALL.md`](./INSTALL.md)).
+plain-markdown `SKILL.md`, no scripts, no dependencies. Tested on
+Claude Code; because it's pure instructions, it runs anywhere (see
+[`INSTALL.md`](./INSTALL.md)).
 
-## What it does
+## What a session does
 
-You give it an idea in a sentence or two (plus, if you have them, the
-buyer, the business model, and your unfair advantage). Then:
+**Input → Interrogation → Bench → Evidence → Experiment → Ledger.**
 
-1. **The council** — five personas judge the *same* brief,
-   **independently** (none sees another's output — that independence
-   is the whole design):
-   - **Contrarian** — assumes it fails; finds the fastest way it dies.
-   - **Expansionist** — the strongest honest bull case and the 10x
-     version.
-   - **Logician** — first principles only; do the mechanism and the
-     incentives actually hold?
-   - **Researcher** — real competitors, substitutes, and comparable
-     pricing (cites sources when web search is available; labels
-     everything "unverified" when it isn't).
-   - **Buyer** — role-plays your exact target customer, honest and
-     skeptical: would they actually pay?
-2. **The Judge** — resolves the tension between them into one call:
-   **GO / RESHAPE / KILL**, with the biggest risk, the biggest upside,
-   a money read, and — the most important output — the cheapest
-   **48-hour, near-zero-build test** that tells you whether you're
-   right without building anything.
+1. **Interrogation** — three examiners (Skeptic, Operator, Buyer) ask
+   the questions you can't comfortably answer. No verdicts, no
+   scores. Output: your **assumption stack**, every load-bearing
+   claim tagged `KNOW` / `BELIEVE` / `HOPE`. What you couldn't answer
+   is a finding, not a failure.
+2. **Bench** — the only judgment stage, and only on what you can
+   verify tonight: your own arithmetic, contradictions, incentive
+   alignment, structural impossibility. Verdict on the argument:
+   `SOUND` or `BROKEN-BECAUSE-X` — never GO/KILL on the venture.
+3. **Evidence** — live search on everything checkable now; every
+   claim tiered `VERIFIED` / `RECALL` / `REASONED`. Recall never
+   poses as fact.
+4. **Experiment** — one falsifiable, behavioral, cost-capped test of
+   your riskiest untested assumption — and *you* go on the record
+   first: your predicted result, and what you'll do if it fails.
+5. **Ledger** — a per-venture file that persists across sessions.
+   Next time, the session opens by scoring your prediction against
+   what reality returned. Over time it shows the three curves that
+   matter: hope shrinking, calibration improving, cost-per-answer
+   falling.
 
-The friction is the product. No persona hedges or softens. Veto floors
-stop a broken mechanism or a customer-won't-pay signal from being
-outvoted into a GO, and an explicit anti-sycophancy check runs before
-the verdict is finalized.
+## Why this shape
 
-## Why
+Because the judgment worth compounding is *yours*. A verdict — even a
+correct one — changes nothing unless you act; a scored prediction
+changes you. Full reasoning in [`docs/PHILOSOPHY.md`](./docs/PHILOSOPHY.md)
+(the constitution), [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)
+(who judges what, and why), [`docs/WORKFLOW.md`](./docs/WORKFLOW.md)
+(one session, stage by stage), and
+[`docs/EVALUATION.md`](./docs/EVALUATION.md) (how "it works" is
+measured — founder judgment, never venture outcomes).
 
-Every founder's instinct is to protect the idea; every generic AI's
-instinct is to encourage the person in front of it. Both push the same
-direction — toward building. The expensive mistakes happen when nobody
-in the room is trying to kill the idea *cheaply*, on purpose, before
-the build. Crucible is that room.
+Coming from v1's five-persona council? The full account of what
+changed and why is [`docs/MIGRATION_V1_TO_V2.md`](./docs/MIGRATION_V1_TO_V2.md).
 
 ## Example
 
 [`example/worked-example.md`](./example/worked-example.md) — a full
-run on a sample idea: the brief, all five personas, the Judge's
-verdict, and the falsifiable 48-hour test it lands on.
+v2 session on a sample idea, including the ledger it writes and the
+opening of the follow-up session where the founder's prediction gets
+scored.
 
 ## Status
 
-In use. This one has no 60-day kill criterion like the historian —
-it's a decision aid, not a habit to falsify — but it earns its keep by
-one standard: the 48-hour test it produces must be *behavioral*
-(measures what people do, not what they say), *falsifiable* (a
-pass/fail threshold declared before running it), and executable
-without building the product. A verdict that doesn't end in a test
-that meets that bar is a Crucible failure, not a founder failure.
+v2, in use. Its own success metric is defined in
+[`docs/EVALUATION.md`](./docs/EVALUATION.md): not venture outcomes —
+founder calibration, stack health, and learning velocity, all
+computable from the ledger it maintains.

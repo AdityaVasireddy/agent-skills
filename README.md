@@ -14,11 +14,11 @@ Captures a chronological, per-project engineering record — decisions made (and
 
 Currently undergoing a **60-day real-world evaluation** with pre-registered success criteria in `SKILL.md`. See `engineering-historian/INSTALL.md` for setup.
 
-### [crucible](https://github.com/AdityaVasireddy/agent-skills/blob/main/crucible) — v1
+### [crucible](https://github.com/AdityaVasireddy/agent-skills/blob/main/crucible) — v2
 
-Adversarial idea validation *before* anything gets built. Five independent personas — Contrarian, Expansionist, Logician, Researcher, Buyer — attack the same brief from different angles without seeing each other's output, then a Judge resolves the tension into one **GO / RESHAPE / KILL** verdict. The most important output isn't the verdict; it's the cheapest 48-hour, near-zero-build test that tells you whether you're right without building anything.
+Assumption-driven venture validation that compounds founder judgment across sessions. Three examiners interrogate the idea into an assumption stack (`KNOW`/`BELIEVE`/`HOPE`), the Bench judges only what's checkable tonight — your own arithmetic, contradictions, incentives — with a `SOUND`/`BROKEN-BECAUSE-X` verdict on the *argument*, and each session ends in one falsifiable, cost-capped experiment with your prediction and pre-commitment on the record. A per-venture ledger persists across sessions; the next one opens by scoring your prediction against what reality returned.
 
-LLMs default to encouraging the person in front of them; Crucible is engineered to do the opposite. Veto floors stop a broken mechanism or a customer-won't-pay signal from being outvoted into a GO, and an anti-sycophancy check runs before the verdict lands. One markdown file, no dependencies.
+**v2 replaced v1's five-persona jury and GO/RESHAPE/KILL verdict** — it no longer claims to know outcomes at all. The design reviews that led there, and the full philosophy/architecture/evaluation docs, live in `crucible/docs/`. One markdown skill file, no dependencies.
 
 ### [five-gate-method](https://github.com/AdityaVasireddy/agent-skills/blob/main/five-gate-method) — v1
 
