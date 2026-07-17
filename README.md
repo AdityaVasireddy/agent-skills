@@ -14,7 +14,7 @@ Captures a chronological, per-project engineering record — decisions made (and
 
 Currently undergoing a **60-day real-world evaluation** with pre-registered success criteria in `SKILL.md`. See `engineering-historian/INSTALL.md` for setup.
 
-### [crucible](https://github.com/AdityaVasireddy/agent-skills/blob/main/crucible) — v2
+### [crucible](https://github.com/AdityaVasireddy/agent-skills/blob/main/crucible) — v2.0.0
 
 Assumption-driven venture validation that compounds founder judgment across sessions. Three examiners interrogate the idea into an assumption stack (`KNOW`/`BELIEVE`/`HOPE`), the Bench judges only what's checkable tonight — your own arithmetic, contradictions, incentives — with a `SOUND`/`BROKEN-BECAUSE-X` verdict on the *argument*, and each session ends in one falsifiable, cost-capped experiment with your prediction and pre-commitment on the record. A per-venture ledger persists across sessions; the next one opens by scoring your prediction against what reality returned.
 
@@ -49,7 +49,7 @@ Skills are plain folders — drop one into whatever skills directory your agent 
 
 **engineering-historian specifically** ships two extra pieces beyond the skill folder (a hook script and a sweep prompt) because Claude Code hooks are invoked by file path, not by skill content. See `engineering-historian/INSTALL.md` for the two-step setup.
 
-**For skills without an automation layer** (crucible, five-gate-method, and session-handoff are all single-file): copy the skill's folder into `.claude/skills/<name>/` in your project, or `~/.claude/skills/<name>/` globally. Other Agent Skills–compatible tools use their own convention — check that tool's docs.
+**For skills without an automation layer** (crucible, five-gate-method, and session-handoff need no hook or script — crucible additionally ships a `docs/` folder of design documentation, which is for humans only and not loaded by the agent): copy the skill's folder into `.claude/skills/<name>/` in your project, or `~/.claude/skills/<name>/` globally. Other Agent Skills–compatible tools use their own convention — check that tool's docs.
 
 ---
 

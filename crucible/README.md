@@ -64,7 +64,9 @@ scored.
 
 ## Status
 
-v2, in use. Its own success metric is defined in
+**v2.0.0**, in use. See [`CHANGELOG.md`](./CHANGELOG.md) for release
+history and [`docs/ROADMAP.md`](./docs/ROADMAP.md) for what happens
+next. Crucible's own success metric is defined in
 [`docs/EVALUATION.md`](./docs/EVALUATION.md): not venture outcomes —
 founder calibration, stack health, and learning velocity, all
 computable from the ledger it maintains.

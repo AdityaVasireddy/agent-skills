@@ -10,17 +10,24 @@ crucible/
   SKILL.md                  the skill — the six-stage session loop
   README.md                 what it is and why
   INSTALL.md                this file
+  CHANGELOG.md              release history (Keep a Changelog format)
   docs/
     PHILOSOPHY.md           the constitution — invariant principles
     ARCHITECTURE.md         components, data flow, who judges what
     WORKFLOW.md             one session, stage by stage
     EVALUATION.md           how "it works" is measured
     MIGRATION_V1_TO_V2.md   what changed from the council version
+    RELEASE_NOTES_v2.0.0.md the GitHub Release writeup for this version
+    RELEASE_CHECKLIST.md    the release gate this version shipped against
+    ROADMAP.md               what happens next (evidence, not features)
   example/
     worked-example.md       a full v2 session + the follow-up opening
 ```
 
 Only `SKILL.md` is loaded by the agent. Everything else is for humans.
+New to the project? Read `README.md`, then `docs/PHILOSOPHY.md` first
+— it's the shortest path to understanding *why* the skill is shaped
+the way it is before you read *what* it does.
 
 ## Claude Code
 
