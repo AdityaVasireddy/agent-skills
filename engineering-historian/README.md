@@ -46,6 +46,22 @@ check), `--status` (queue + log tail), and `--replay` (deterministic
 retry of one queued transcript, replacing hand-improvised recoveries).
 62/62 tests passing. Full entry in [`CHANGELOG.md`](./CHANGELOG.md).
 
+**v3.1.3** fixes a real bug found in the wild: the sweep hook is
+registered machine-wide, so it also runs inside headless `claude -p`
+sessions in *other* projects — and until this release, it created a
+`knowledge/` vault in whatever directory it woke up in even when it
+was about to skip, before it had even checked for a transcript. A
+no-op `-p` session in an unrelated repo could silently leave a stray
+`knowledge/` folder behind. The sweep now runs every skip check —
+transcript exists, session isn't trivial, not a duplicate — before
+touching the filesystem at all; a skip leaves the directory exactly
+as it found it and logs to a shared location instead
+(`~/.claude/historian/skips.log`). This release also closes a related
+race where a session ending right after a compaction could fire the
+sweep twice and pay for two model calls instead of one. 75/75 tests
+passing, including a live reproduction of the original bug. Full
+entry in [`CHANGELOG.md`](./CHANGELOG.md).
+
 No database. No embeddings. No dashboard. Just markdown + git.
 
 One thing to know up front: the hook fires only when Claude Code
