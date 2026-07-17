@@ -48,6 +48,12 @@
 set -u
 
 # ---- Recursion guard: the sweep's own headless session must never sweep itself ----
+# FROZEN EXTERNAL INTERFACE: the variable name HISTORIAN_SWEEP_ACTIVE and the
+# "exit before any write" semantics of this line are relied on outside this
+# repo — issue-runtime's ADR-22 option B sets HISTORIAN_SWEEP_ACTIVE=1 in an
+# engine child's env specifically to suppress the sweep. Do not rename this
+# variable and do not move any write above this line without a coordinated
+# change in issue-runtime first.
 if [ "${HISTORIAN_SWEEP_ACTIVE:-0}" = "1" ]; then exit 0; fi
 
 # ---- Mode dispatch ----
@@ -282,15 +288,19 @@ run_pipeline() {
   DAYFILE="$VAULT/$PROJECT/$TODAY.md"
   SKILL_DIR="${HISTORIAN_SKILL_DIR:-$HOME/.claude/historian}"
   LOG="$SWEEPDIR/sweep.log"
+  SESSLOG="$SWEEPDIR/sessions.log"
 
-  mkdir -p "$SWEEPDIR" "$VAULT/$PROJECT"
-  ensure_gitignore
-  ensure_capture_rules
-
-  log() { printf '%s [%s] %s\n' "$(date +'%F %T')" "$EVENT" "$1" >> "$LOG"; }
+  # ---- Global skip logger: everything from here through the concurrency
+  # lock below must never write into $VAULT — a session that skips leaves the
+  # cwd completely untouched (a headless -p child SKIPs in a cwd it doesn't
+  # own; the vault used to get created anyway). skips.log is intentionally
+  # unbounded — one low-volume diagnostic line per skip, appended by every
+  # session end machine-wide, no rotation — and lives under $SKILL_DIR
+  # (~/.claude/historian by default), never the session cwd.
+  glog() { mkdir -p "$SKILL_DIR"; printf '%s [%s] %s\n' "$(date +'%F %T')" "$EVENT" "$1" >> "$SKILL_DIR/skips.log" 2>/dev/null; }
 
   if [ -z "$TRANSCRIPT" ] || [ ! -f "$TRANSCRIPT" ]; then
-    log "SKIP no transcript ($SESSION_ID)"; return 2
+    glog "SKIP no transcript project=$ROOT ($SESSION_ID)"; return 2
   fi
 
   # ---- Capture gate (v3.1): a triviality gate, not a significance gate ----
@@ -310,9 +320,7 @@ run_pipeline() {
   BYTES_WORK="${HISTORIAN_WORK_BYTES:-50000}"
   GIT_WINDOW="${HISTORIAN_GIT_WINDOW:-12 hours ago}"
 
-  if [ "$SKIP_GATE" = "1" ]; then
-    log "GATE bypassed: replay of a queued entry ($SESSION_ID)"
-  else
+  if [ "$SKIP_GATE" != "1" ]; then
     GATE_RUN_REASON=""
 
     # Tier 0a — raw transcript size. Deliberately reads the file on disk, not
@@ -344,7 +352,7 @@ run_pipeline() {
     fi
 
     if [ -z "$GATE_RUN_REASON" ]; then
-      log "SKIP trivial: $USER_TURNS turns < $TURNS_WORK, ${RAW_BYTES}B < ${BYTES_WORK}B, git: $GIT_SIGNAL — every available signal trivial ($SESSION_ID)"
+      glog "SKIP trivial: $USER_TURNS turns < $TURNS_WORK, ${RAW_BYTES}B < ${BYTES_WORK}B, git: $GIT_SIGNAL — every available signal trivial project=$ROOT ($SESSION_ID)"
       return 2
     fi
   fi
@@ -355,14 +363,72 @@ run_pipeline() {
   # arrives still at N turns and was wrongly deduped. Bytes grow with any
   # activity, so a real continuation re-sweeps (SWEEP.md rule 6 merges, never
   # duplicates), while the few bytes of a bare exit stay under the delta.
-  SESSLOG="$SWEEPDIR/sessions.log"
-  touch "$SESSLOG"
+  # Reads $SESSLOG without requiring the vault to exist yet — a missing file
+  # just means "never swept," which grep's own 2>/dev/null already handles.
   DEDUP_DELTA="${HISTORIAN_DEDUP_DELTA:-4096}"
   if [ "$SKIP_GATE" != "1" ]; then
     PREV_BYTES="$(grep "^$SESSION_ID	" "$SESSLOG" 2>/dev/null | tail -1 | cut -f2)"
     if [ -n "${PREV_BYTES:-}" ] && [ "$RAW_BYTES" -le "$((PREV_BYTES + DEDUP_DELTA))" ]; then
-      log "SKIP already swept at ${PREV_BYTES}B, now ${RAW_BYTES}B (growth <= ${DEDUP_DELTA}B) ($SESSION_ID)"; return 2
+      glog "SKIP already swept at ${PREV_BYTES}B, now ${RAW_BYTES}B (growth <= ${DEDUP_DELTA}B) project=$ROOT ($SESSION_ID)"; return 2
     fi
+  fi
+
+  # ---- Concurrency lock (double-fire guard): SessionEnd and PreCompact can
+  # fire for the same session close enough together that the byte-growth
+  # dedup above — which only compares against a PRIOR COMPLETED sweep — has
+  # not recorded anything for either yet. An atomic mkdir lock, keyed on
+  # session ID and stored globally (not in $VAULT, so it also guards this
+  # exact pre-vault window), closes that race before the model call, which is
+  # the expensive step. mkdir is atomic and portable — no flock dependency
+  # (unreliable on macOS / Git-Bash-on-Windows).
+  [ -n "$SESSION_ID" ] || SESSION_ID="nosession-$$"
+  LOCKDIR="$SKILL_DIR/locks"
+  mkdir -p "$LOCKDIR" 2>/dev/null
+  LOCK="$LOCKDIR/$SESSION_ID"
+  LOCK_HELD=0
+  if mkdir "$LOCK" 2>/dev/null; then
+    LOCK_HELD=1
+  else
+    # Stale-lock reclaim: a crashed run can't hold this forever. 600s is well
+    # past the script's own 300s model-call timeout, so a genuinely crashed
+    # holder gets reclaimed; a live holder's lock is always younger.
+    #
+    # Known, accepted TOCTOU: two concurrent processes can both observe a
+    # stale lock, and the second rm -rf can delete the fresh lock the first
+    # just created, letting both proceed. This requires a stale lock AND a
+    # simultaneous double-fire; the byte-growth dedup above still backstops
+    # most such cases. Accepted rather than adding rename-based reclaim.
+    if [ -d "$LOCK" ] && [ "$(( $(date +%s) - $(stat -c %Y "$LOCK" 2>/dev/null || stat -f %m "$LOCK" 2>/dev/null || echo 0) ))" -gt 600 ]; then
+      rm -rf "$LOCK"
+    fi
+    if mkdir "$LOCK" 2>/dev/null; then
+      LOCK_HELD=1
+    else
+      glog "SKIP duplicate-fire (lock held) project=$ROOT ($SESSION_ID)"
+      return 2
+    fi
+  fi
+  # Installed immediately on acquisition, not deferred to the temp-file trap
+  # below, so a kill between here and there can't orphan the lock past the
+  # 600s reclaim window. Release is conditional on LOCK_HELD: the duplicate-
+  # fire loser already returned above and never reaches this trap, but the
+  # guard is kept here too since a later trap in this function replaces this
+  # one and must carry the same condition forward.
+  trap '[ "$LOCK_HELD" = "1" ] && rmdir "$LOCK" 2>/dev/null' RETURN
+
+  # ---- Vault contract self-heal (I2/I3): idempotent, cheap, safe to run
+  # every time — but only reached once every skip/dedup/lock check above has
+  # passed, i.e. only when a sweep is actually about to happen. ----
+  mkdir -p "$SWEEPDIR" "$VAULT/$PROJECT"
+  ensure_gitignore
+  ensure_capture_rules
+  touch "$SESSLOG"
+
+  log() { printf '%s [%s] %s\n' "$(date +'%F %T')" "$EVENT" "$1" >> "$LOG"; }
+
+  if [ "$SKIP_GATE" = "1" ]; then
+    log "GATE bypassed: replay of a queued entry ($SESSION_ID)"
+  else
     log "GATE run: $GATE_RUN_REASON [turns=$USER_TURNS bytes=$RAW_BYTES] ($SESSION_ID)"
   fi
 
@@ -374,7 +440,7 @@ run_pipeline() {
   OUT_FILE="$(mktemp)"
   EXTRACTED=""
   TMP_DAY=""
-  trap 'rm -f "$PROMPT_FILE" "$OUT_FILE" "$EXTRACTED" "$TMP_DAY"' RETURN
+  trap '[ "$LOCK_HELD" = "1" ] && rmdir "$LOCK" 2>/dev/null; rm -f "$PROMPT_FILE" "$OUT_FILE" "$EXTRACTED" "$TMP_DAY"' RETURN
 
   {
     cat "$SWEEP_PROMPT"

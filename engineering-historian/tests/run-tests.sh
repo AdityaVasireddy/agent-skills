@@ -40,6 +40,7 @@ mkdir -p "$SANDBOX/bin"
 cat > "$SANDBOX/bin/claude" <<'STUB'
 #!/usr/bin/env bash
 cat > /dev/null
+[ "${STUB_SLEEP:-0}" != "0" ] && sleep "${STUB_SLEEP}"
 if [ -n "${STUB_CALLED_FILE:-}" ]; then
   printf 'called guard=%s\n' "${HISTORIAN_SWEEP_ACTIVE:-unset}" >> "$STUB_CALLED_FILE"
 fi
@@ -132,14 +133,15 @@ assert_grep()    { if grep -q "$1" "$2" 2>/dev/null; then ok "$3"; else bad "$3 
 assert_no_grep() { if grep -q "$1" "$2" 2>/dev/null; then bad "$3 — pattern '$1' unexpectedly in $2"; else ok "$3"; fi; }
 assert_file()    { if [ -f "$1" ]; then ok "$2"; else bad "$2 — missing $1"; fi; }
 assert_no_file() { if [ -f "$1" ]; then bad "$2 — $1 should not exist"; else ok "$2"; fi; }
+assert_no_path() { if [ -e "$1" ]; then bad "$2 — $1 should not exist"; else ok "$2"; fi; }
 
 echo "== T1: trivial session (3 turns, tiny transcript, quiet repo) skips without a model call =="
 P="$(mk_project t1 repo)"; T="$SANDBOX/t1.jsonl"; mk_transcript "$T" 3 2000
 export STUB_CALLED_FILE="$SANDBOX/t1.called"; export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
 run_sweep "$P" "$T" SessionEnd t1-session
-assert_grep "SKIP trivial: 3 turns" "$P/knowledge/.sweep/sweep.log" "T1 gate skips and names every signal"
-assert_grep "git: no commits since" "$P/knowledge/.sweep/sweep.log" "T1 skip line shows the git signal was consulted"
-assert_no_file "$P/knowledge/$(basename "$P")/$TODAY.md" "T1 no day file written"
+assert_grep "SKIP trivial: 3 turns" "$SANDBOX/skill/skips.log" "T1 gate skips and names every signal (logged globally, not to the session cwd)"
+assert_grep "git: no commits since" "$SANDBOX/skill/skips.log" "T1 skip line shows the git signal was consulted"
+assert_no_path "$P/knowledge" "T1 SKIP leaves the project cwd completely untouched — no vault created at all"
 assert_no_file "$STUB_CALLED_FILE" "T1 no model call made"
 
 echo "== T2: prompt-light / work-heavy (3 turns, 80KB transcript) sweeps — the headline regression =="
@@ -171,14 +173,16 @@ P="$(mk_project t5 repo)"; T="$SANDBOX/t5.jsonl"; mk_transcript "$T" 3 2000
 git -C "$P" commit -q --allow-empty -m "history(auto): t5 $TODAY"
 export STUB_CALLED_FILE="$SANDBOX/t5.called"
 run_sweep "$P" "$T" SessionEnd t5-session
-assert_grep "SKIP trivial" "$P/knowledge/.sweep/sweep.log" "T5 auto-commit excluded from git signal"
+assert_grep "SKIP trivial" "$SANDBOX/skill/skips.log" "T5 auto-commit excluded from git signal"
+assert_no_path "$P/knowledge" "T5 SKIP leaves the project cwd completely untouched"
 assert_no_file "$STUB_CALLED_FILE" "T5 no model call made"
 
 echo "== T6: no git repo — gate degrades gracefully, tier-0 signals decide =="
 P="$(mk_project t6 norepo)"; T="$SANDBOX/t6.jsonl"; mk_transcript "$T" 3 2000
 export STUB_CALLED_FILE="$SANDBOX/t6.called"
 run_sweep "$P" "$T" SessionEnd t6-session
-assert_grep "SKIP trivial: .*git: unavailable" "$P/knowledge/.sweep/sweep.log" "T6 skip states git was unavailable"
+assert_grep "SKIP trivial: .*git: unavailable" "$SANDBOX/skill/skips.log" "T6 skip states git was unavailable"
+assert_no_path "$P/knowledge" "T6 SKIP leaves the project cwd completely untouched"
 assert_no_file "$STUB_CALLED_FILE" "T6 no model call made"
 
 echo "== T7: PreCompact sweeps, unchanged SessionEnd dedups =="
@@ -187,7 +191,7 @@ export STUB_CALLED_FILE="$SANDBOX/t7.called"
 run_sweep "$P" "$T" PreCompact t7-session
 run_sweep "$P" "$T" SessionEnd t7-session
 assert_grep "\[PreCompact\] OK wrote" "$P/knowledge/.sweep/sweep.log" "T7 PreCompact sweep ran"
-assert_grep "\[SessionEnd\] SKIP already swept at .*B" "$P/knowledge/.sweep/sweep.log" "T7 unchanged SessionEnd deduped on bytes"
+assert_grep "\[SessionEnd\] SKIP already swept at .*B" "$SANDBOX/skill/skips.log" "T7 unchanged SessionEnd deduped on bytes (logged globally — the dedup skip never touches the already-existing vault)"
 [ "$(grep -c '^called' "$STUB_CALLED_FILE")" -eq 1 ] && ok "T7 exactly one model call" || bad "T7 expected 1 model call, got $(grep -c '^called' "$STUB_CALLED_FILE")"
 
 echo "== T8: transcript grows past the delta after PreCompact — SessionEnd re-sweeps =="
@@ -356,6 +360,54 @@ assert_grep "SKIP commit: git operation in progress" "$P/knowledge/.sweep/sweep.
 HEAD_AFTER="$(git -C "$P" rev-parse HEAD)"
 [ "$HEAD_BEFORE" = "$HEAD_AFTER" ] && ok "T20 no commit created during merge in progress" || bad "T20 HEAD moved despite merge in progress"
 rm -f "$GITDIR/MERGE_HEAD"
+
+echo "== T21: trivial session leaves the project cwd completely untouched (the write-before-gate regression) =="
+P="$(mk_project t21 repo)"; T="$SANDBOX/t21.jsonl"; mk_transcript "$T" 3 2000
+export STUB_CALLED_FILE="$SANDBOX/t21.called"; export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
+BEFORE="$(find "$P" -mindepth 1 | sort)"
+run_sweep "$P" "$T" SessionEnd t21-session
+AFTER="$(find "$P" -mindepth 1 | sort)"
+[ "$BEFORE" = "$AFTER" ] && ok "T21 SKIP creates zero files/dirs anywhere under the project cwd" || bad "T21 project cwd changed on SKIP: before=[$BEFORE] after=[$AFTER]"
+assert_no_file "$STUB_CALLED_FILE" "T21 no model call made"
+
+echo "== T22: missing transcript (e.g. a headless -p child with no persisted transcript) leaves cwd untouched =="
+P="$(mk_project t22 repo)"
+BEFORE="$(find "$P" -mindepth 1 | sort)"
+run_sweep "$P" "$SANDBOX/does-not-exist-t22.jsonl" SessionEnd t22-session
+AFTER="$(find "$P" -mindepth 1 | sort)"
+[ "$BEFORE" = "$AFTER" ] && ok "T22 no-transcript SKIP creates zero files/dirs under the project cwd" || bad "T22 project cwd changed on no-transcript SKIP: before=[$BEFORE] after=[$AFTER]"
+assert_grep "SKIP no transcript" "$SANDBOX/skill/skips.log" "T22 no-transcript skip logged globally"
+
+echo "== T23: HISTORIAN_SWEEP_ACTIVE=1 exits before the mode dispatch — cwd untouched, model never called =="
+P="$(mk_project t23 repo)"; T="$SANDBOX/t23.jsonl"; mk_transcript "$T" 12 0
+export STUB_CALLED_FILE="$SANDBOX/t23.called"; export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
+BEFORE="$(find "$P" -mindepth 1 | sort)"
+printf '{"transcript_path":"%s","cwd":"%s","hook_event_name":"SessionEnd","session_id":"t23-session"}' "$T" "$P" \
+  | HISTORIAN_SWEEP_ACTIVE=1 bash "$SCRIPT"
+AFTER="$(find "$P" -mindepth 1 | sort)"
+[ "$BEFORE" = "$AFTER" ] && ok "T23 recursion guard leaves cwd untouched" || bad "T23 project cwd changed despite HISTORIAN_SWEEP_ACTIVE=1: before=[$BEFORE] after=[$AFTER]"
+assert_no_file "$STUB_CALLED_FILE" "T23 recursion guard: model never called"
+
+echo "== T24: SessionEnd/PreCompact double-fire on the same session ID — only one model call, lock cleaned up =="
+P="$(mk_project t24 repo)"; T="$SANDBOX/t24.jsonl"; mk_transcript "$T" 12 0
+export STUB_CALLED_FILE="$SANDBOX/t24.called"; export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0; export STUB_SLEEP=2
+run_sweep "$P" "$T" PreCompact t24-session &
+PID1=$!
+run_sweep "$P" "$T" SessionEnd t24-session &
+PID2=$!
+wait "$PID1"; wait "$PID2"
+unset STUB_SLEEP
+[ "$(grep -c '^called' "$STUB_CALLED_FILE" 2>/dev/null || echo 0)" -eq 1 ] && ok "T24 exactly one model call across the simultaneous double-fire" || bad "T24 expected 1 model call, got $(grep -c '^called' "$STUB_CALLED_FILE" 2>/dev/null || echo 0)"
+assert_grep "SKIP duplicate-fire (lock held)" "$SANDBOX/skill/skips.log" "T24 the losing invocation logs a duplicate-fire skip (not silently absorbed by an unrelated failure)"
+assert_no_path "$SANDBOX/skill/locks/t24-session" "T24 lock released after both invocations finish"
+
+echo "== T25: empty session ID does not corrupt the shared locks directory =="
+P="$(mk_project t25 repo)"; T="$SANDBOX/t25.jsonl"; mk_transcript "$T" 3 2000
+export STUB_CALLED_FILE="$SANDBOX/t25.called"; export STUB_OUTPUT_FILE="$FIX_CLEAN"; export STUB_EXIT=0
+mkdir -p "$SANDBOX/skill/locks"; touch "$SANDBOX/skill/locks/.keep-marker"
+printf '{"transcript_path":"%s","cwd":"%s","hook_event_name":"SessionEnd","session_id":""}' "$T" "$P" | bash "$SCRIPT"
+assert_no_file "$STUB_CALLED_FILE" "T25 trivial session with empty session id still skips before the model call"
+assert_file "$SANDBOX/skill/locks/.keep-marker" "T25 locks dir itself was never wiped as a stale lock"
 
 echo
 echo "======================================"
