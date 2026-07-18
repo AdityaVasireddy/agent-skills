@@ -5,7 +5,12 @@ All notable changes to Crucible are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and versioning follows [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [2.1.0] — 2026-07-17
+
+A methodology refinement release. One behavioral change (the Stage 4
+evidence passes below); everything else is documentation alignment.
+Stages, tags, tiers, ledger schema, and the output contract are
+otherwise unchanged.
 
 ### Changed
 
@@ -26,6 +31,12 @@ and versioning follows [Semantic Versioning](https://semver.org/).
   tiers, stack tags, ledger schema, and all other stages are
   unchanged; the worked example's Stage 4 was updated to show the new
   passes.
+- **Documentation aligned with the Stage 4 methodology** —
+  `docs/WORKFLOW.md`'s Stage 4 now documents the four passes and its
+  leave contract includes the wedge list and market-state
+  classification, and `docs/ARCHITECTURE.md`'s Evidence component
+  explicitly forbids inferring adequacy from existence — restoring
+  the rule that `SKILL.md` is derivable from the documents of record.
 
 ## [2.0.0] — 2026-07-17
 
@@ -148,4 +159,5 @@ and are documented separately (see `docs/MIGRATION_V1_TO_V2.md`).
   semantics are owned by `docs/ARCHITECTURE.md`, to prevent the two
   documents drifting into competing definitions over time.
 
+[2.1.0]: https://github.com/AdityaVasireddy/agent-skills/releases/tag/v2.1.0
 [2.0.0]: https://github.com/AdityaVasireddy/agent-skills/tree/main/crucible

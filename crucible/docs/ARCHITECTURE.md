@@ -30,7 +30,7 @@ another's.
 | **Input** | Establish the Brief (new venture) or load the Ledger (returning venture); apply the scope gate | Analysis of any kind |
 | **Interrogation** | Produce the Assumption Stack by questioning the founder | Verdicts, conclusions, advice |
 | **Bench** | Judge the argument on verifiable-now grounds; rank risks (as recommendation) | Outcome predictions, probabilities, market sizes from memory, scores |
-| **Evidence** | Check every searchable claim against live sources; tier all claims | Treating recall or reasoning as verification |
+| **Evidence** | Check every searchable claim against live sources; tier all claims | Treating recall or reasoning as verification; inferring adequacy from existence (a competitor existing is never evidence the buyer's problem is well solved) |
 | **Experiment** | Design one real-world test for the riskiest unresolved assumption; record the founder's prediction and pre-commitment | Running more than one test at a time; tests that require building the product to learn the answer |
 | **Ledger** | Persist the venture's state: stack, experiments, predictions, outcomes, calibration | Interpretation — the ledger records, it does not opine |
 

@@ -106,9 +106,34 @@ tier: `VERIFIED` (live, cited) / `RECALL` (training memory — "confirm
 before acting") / `REASONED` (inference). Without search, the stage
 says plainly that nothing is verified.
 
+When competitors or substitutes surface, four separate passes run —
+because existence and adequacy are different claims, and the second
+is never inferred from the first:
+
+- **4a — Discovery.** Answers only "does this capability already
+  exist?" — who offers it, at what price, through what channel.
+- **4b — Adequacy.** Independently answers "is the underlying problem
+  actually well solved for this buyer?" — review sentiment and
+  recurring complaints, trust and recommendation quality, retention,
+  behavior change, abandonment — each finding tiered like any other
+  claim. Then the falsification question: "what evidence would
+  convince us this market is not solved despite existing
+  competitors?" If the pass comes up empty, it states exactly **"No
+  evidence collected regarding adequacy"** and the adequacy
+  assumption enters the stack as `HOPE`.
+- **4c — Remaining wedge opportunities.** The wedges still open, each
+  labeled **evidence-backed** (cite the tiered finding) or
+  **hypothesis** (enters the stack as `HOPE` or `BELIEVE`).
+- **4d — Market state.** Exactly one of `Sparse` / `Emerging` /
+  `Crowded-but-Weak` / `Crowded-with-Strong-Incumbents` / `Mature` /
+  `Commodity`, citing the findings that justify the choice — or
+  "insufficient evidence to classify," never a default to "crowded."
+
 **Leaves:** the stack with evidence attached — some `HOPE` and
-`BELIEVE` entries promoted or demoted by facts, and the remaining
-truly-empirical assumptions isolated as experiment candidates.
+`BELIEVE` entries promoted or demoted by facts — plus the wedge list
+and market-state classification when competitors surfaced, and the
+remaining truly-empirical assumptions isolated as experiment
+candidates.
 
 ## Stage 5 — Experiment
 

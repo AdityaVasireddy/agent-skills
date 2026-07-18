@@ -64,7 +64,7 @@ scored.
 
 ## Status
 
-**v2.0.0**, in use. See [`CHANGELOG.md`](./CHANGELOG.md) for release
+**v2.1.0**, in use. See [`CHANGELOG.md`](./CHANGELOG.md) for release
 history and [`docs/ROADMAP.md`](./docs/ROADMAP.md) for what happens
 next. Crucible's own success metric is defined in
 [`docs/EVALUATION.md`](./docs/EVALUATION.md): not venture outcomes —

@@ -1,7 +1,7 @@
 # Crucible — Roadmap
 
-Crucible v2.0.0's philosophy and architecture are frozen as of this
-release. This document does not propose changes to either — it
+Crucible v2's philosophy and architecture are frozen as of v2.0.0
+(current release: v2.1.0). This document does not propose changes to either — it
 outlines how the project intends to *learn* before any future version
 is even considered. If a phase below produces evidence that the
 architecture itself needs to change, that's a new design review, not
@@ -9,8 +9,8 @@ a roadmap item; nothing here pre-authorizes it.
 
 ## Phase 1 — Real-world founder testing
 
-**Goal:** run v2.0.0 against real ventures and see whether it behaves
-the way the design docs claim it will.
+**Goal:** run the released version against real ventures and see
+whether it behaves the way the design docs claim it will.
 
 - Use it on live ideas — your own, or founders willing to try it —
   across at least a handful of full session-then-return cycles per
@@ -46,7 +46,7 @@ couldn't answer on paper.
   against `PHILOSOPHY.md`'s invariants before it's accepted —
   the same discipline the v1→v2 migration was held to.
 
-This is where a v2.1 (or a documented decision *not* to change
+This is where a future version (or a documented decision *not* to change
 anything) gets proposed — not before.
 
 ## Phase 3 — Developer experience

@@ -17,7 +17,7 @@ crucible/
     WORKFLOW.md             one session, stage by stage
     EVALUATION.md           how "it works" is measured
     MIGRATION_V1_TO_V2.md   what changed from the council version
-    RELEASE_NOTES_v2.0.0.md the GitHub Release writeup for this version
+    RELEASE_NOTES_v2.0.0.md the GitHub Release writeup for v2.0.0
     RELEASE_CHECKLIST.md    the release gate this version shipped against
     ROADMAP.md               what happens next (evidence, not features)
   example/

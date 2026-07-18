@@ -14,7 +14,7 @@ Captures a chronological, per-project engineering record — decisions made (and
 
 Currently undergoing a **60-day real-world evaluation** with pre-registered success criteria in `SKILL.md`. See `engineering-historian/INSTALL.md` for setup.
 
-### [crucible](https://github.com/AdityaVasireddy/agent-skills/blob/main/crucible) — v2.0.0
+### [crucible](https://github.com/AdityaVasireddy/agent-skills/blob/main/crucible) — v2.1.0
 
 Assumption-driven venture validation that compounds founder judgment across sessions. Three examiners interrogate the idea into an assumption stack (`KNOW`/`BELIEVE`/`HOPE`), the Bench judges only what's checkable tonight — your own arithmetic, contradictions, incentives — with a `SOUND`/`BROKEN-BECAUSE-X` verdict on the *argument*, and each session ends in one falsifiable, cost-capped experiment with your prediction and pre-commitment on the record. A per-venture ledger persists across sessions; the next one opens by scoring your prediction against what reality returned.
 
