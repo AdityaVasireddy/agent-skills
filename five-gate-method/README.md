@@ -30,11 +30,17 @@ through five gates, each with a binary pass condition:
    prevents overstating certainty.
 
 Rollback goes as deep as the damage: a failed Gate 4 can send the task
-back to Gate 1, not just Gate 3. A "smells" list catches skipped gates
-mid-task ("you're on attempt three of the same fix" is easier to notice
-than "reason adversarially" is to remember). Trivial work skips the
-gates entirely — forcing five gates onto a two-minute edit is its own
-failure mode, and the skill says so.
+back to Gate 1, not just Gate 3 — and a Gate 4 failure usually means
+Gate 2 was thin, not that Gate 4 needs to be stricter. Rollback is
+bounded, too: the same gate failing twice ends the loop and becomes a
+Gate 5 report of the blocked state, rather than a cycle that grinds to
+avoid admitting one. The gates can be entered mid-task — resume at the
+earliest gate whose pass condition you can't currently evidence — and a
+"smells" list catches skipped gates on the way ("you're on attempt
+three of the same fix" is easier to notice than "reason adversarially"
+is to remember). Trivial work skips the gates entirely — forcing five
+gates onto a two-minute edit is its own failure mode, and the skill
+says so.
 
 ## Why
 
@@ -51,6 +57,9 @@ that made it effective still is.
 debugging session (fictional bug, real method) walked through all five
 gates, including a rival hypothesis eliminated at Gate 3 and a Gate 4
 failure that rolls back to Gate 2.
+
+`SKILL.md` also carries a short skipped-gate vignette inline, for the
+case where the agent needs the lesson without leaving the skill file.
 
 ## Status
 

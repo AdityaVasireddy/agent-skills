@@ -8,7 +8,7 @@ agent looks."
 
 ```
 five-gate-method/
-  SKILL.md                  the skill — the five gates, standing habits, and smells
+  SKILL.md                  the skill — the five gates, standing habits, smells, and a skipped-gate walkthrough
   README.md                 what it is and why
   INSTALL.md                this file
   example/

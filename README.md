@@ -22,7 +22,7 @@ Assumption-driven venture validation that compounds founder judgment across sess
 
 ### [five-gate-method](https://github.com/AdityaVasireddy/agent-skills/blob/main/five-gate-method) — v1
 
-Evidence-driven task discipline for hard tasks — anything where the first idea might be wrong. Five ordered gates, each with a binary pass condition: scope before work, evidence before reasoning, adversarial reasoning, verification at the layer of the claim, calibrated reporting. Plus a "smells" list that catches skipped gates mid-task ("you're on attempt three of the same fix" is easier to notice than "reason adversarially" is to remember).
+Evidence-driven task discipline for hard tasks — anything where the first idea might be wrong. Five ordered gates, each with a binary pass condition: scope before work, evidence before reasoning, adversarial reasoning, verification at the layer of the claim, calibrated reporting. Plus a "smells" list that catches skipped gates mid-task ("you're on attempt three of the same fix" is easier to notice than "reason adversarially" is to remember). The gates are also enterable mid-task: when work has already gone sideways, resume at the earliest gate whose pass condition you can't evidence, and stop cycling once one gate has failed twice — report the blocked state instead.
 
 The premise: model intelligence is rented — pricing and availability change under you — but working *discipline* is behavioral, not stylistic, so it transfers to whatever model you run next. One markdown file, no scripts, no dependencies; if a runtime has no skill support at all, the body pastes into a rules file and works the same. Shipped for behavioral testing — the pre-declared check is in `five-gate-method/README.md`.
 

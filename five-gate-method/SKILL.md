@@ -1,6 +1,6 @@
 ---
 name: five-gate-method
-description: Evidence-driven task discipline for hard tasks. Use PROACTIVELY the moment you notice a task has many layers - multiple dependent steps, unknowns that could change the approach, debugging where the first theory might be wrong, or anything that needs verification before handoff. Also use when a task keeps failing or stalling, or when the user says "five gates", "five-gate method", "fable mode", "think like Fable", "slow down and do this right", or "think this through first". Loads a five-gate task loop (scope, evidence, adversarial reasoning, verification, calibrated reporting) plus standing habits. Model-agnostic - runs on any capable LLM.
+description: Evidence-driven task discipline for hard tasks. Use PROACTIVELY, mid-task as well as at the start, and specifically whenever any of these is true - the task has 3+ dependent steps; you are about to build on a file, API response, or dataset you have not opened; you are on the second failed attempt at the same fix; you are several actions into a plan with no check against intermediate results; you are about to call something done on the strength of "it ran" rather than an observed outcome; a result came back surprisingly clean; or you cannot say in one sentence what done looks like. Also use when a task keeps failing or stalling, or when the user says "five gates", "five-gate method", "fable mode", "think like Fable", "slow down and do this right", or "think this through first". Loads a five-gate task loop (scope, evidence, adversarial reasoning, verification, calibrated reporting) plus standing habits. Model-agnostic - runs on any capable LLM.
 ---
 
 # The Five-Gate Method
@@ -24,6 +24,10 @@ Each gate eliminates a different class of failure:
 Every hard task passes through five gates. A gate must pass before the next one opens. When a task stalls or a result surprises you, name which gate you're at and re-run it.
 
 Rollback goes as deep as the damage: a later gate can invalidate an earlier one. When verification contradicts the plan, return to the earliest gate whose assumptions changed — not merely the previous gate. A failed Gate 4 sometimes means Gate 2 gathered thin evidence, and sometimes means Gate 1 defined the wrong "done."
+
+**Entering mid-task.** You don't have to start at Gate 1. Most of the time this discipline is needed, work is already underway and something has gone sideways. Find the earliest gate whose pass condition you cannot currently produce evidence for, and resume there. If you can't name what done looks like, you're at Gate 1 regardless of how much has been built.
+
+**Rollback is bounded.** If the same gate fails twice on the same task, stop cycling — that repetition is itself a finding. Either the task as scoped is not achievable with the evidence available, or a load-bearing unknown from Gate 1 was never named. Go to Gate 5 and report the incomplete state honestly: what is verified, what is blocked, and what you would need to unblock it. Reporting an unfinished task accurately is a pass, not a failure; grinding the loop to avoid saying so is a Gate 5 violation.
 
 ### Gate 1 — Scope before work
 
@@ -114,11 +118,23 @@ The report is part of the work, not an afterthought.
 
 Any one of these: stop, go back to that gate.
 
+## What a skipped gate looks like
+
+*Task: a nightly script stopped writing its summary files.*
+
+**The failed run.** Gate 2 was thin — the script was read, but no actual invocation's output was ever inspected. Gate 3 settled on the first attractive diagnosis, that the output validator was too strict, with no rival explanation generated. A fix was written. Gate 4 ran the script, saw exit code 0, and declared it done.
+
+**What broke.** No summaries the next night either. Exit 0 proved the script ran; the claim was that a file gets written. Verification sat one layer below the claim.
+
+**The correct rollback.** Not to Gate 3 — to Gate 2. The missing evidence was one real invocation's stdout, which showed the underlying call returning something other than the expected content. The validator had never been the bug. Two fixes had been built on one unexamined assumption, which is exactly what Gate 3's two-failures rule exists to catch.
+
+The generalizable shape: a Gate 4 failure usually means Gate 2 was thin, not that Gate 4 needs to be stricter.
+
 ## How this stacks with the rest of the toolkit
 
 This is a method skill, not a workflow: it changes how the current task is executed and produces no files of its own. It sits at a different altitude from, and hands off to, these companions when they're installed:
 
-- **`/crucible`** answers *should this be built at all* — assumption-driven validation of an idea before work starts, ending in a real-world experiment. Gate 3 is the same adversarial instinct applied *inside* a task, to an answer or diagnosis rather than a business idea. If mid-task evidence starts undermining the premise of the whole project, stop and escalate to Crucible instead of grinding gates.
+- **`/crucible`** answers *should this be built at all* — adversarial validation of an idea before work starts. Gate 3 is the same adversarial instinct applied *inside* a task, to an answer or diagnosis rather than a business idea. If mid-task evidence starts undermining the premise of the whole project, stop and escalate to Crucible instead of grinding gates.
 - **`engineering-historian`** captures what the work taught you. Decisions that survive Gate 3 and pass Gate 4 are exactly what its `/case` blocks exist for — capture them at solve time, not in retrospect. Gate 2's "evidence over memory" is the same rule as its "wisdom is earned through cited evidence."
 - **`session-handoff`** is Gate 5 extended across a context boundary. Its precision-claims rule ("don't state a specific you didn't observe this session") and Gate 5's "never state as fact what you have not verified this session" are the same rule; a session run under the gates produces a handoff almost for free.
 - Task-specific verification skills (code review, proof checks, etc.) are the "how to check" tools; this skill is the discipline of when to reach for them.
