@@ -15,7 +15,8 @@ Session Handoff writes that reasoning down in a fixed structure before it's lost
 - **Manifestation-based classification.** Outstanding Issues, Risks, Technical Debt, and Deferred Work compete for the same content. The skill uses a single decision tree — has it manifested yet? does a compromise live in the code? — so the same fact lands in the same bin every time, instead of by gut feel.
 - **A precision-claims rule.** The skill forbids stating a file path, line number, or numeric value it didn't actually observe in the session. A vague-but-honest pointer beats a precise-sounding guess the next agent will trust blindly.
 - **A self-consistency pass.** Sections that describe the same system from different angles must agree on ordering, naming, and locations before the document is saved — no shipping a handoff that contradicts itself.
-- **Required vs. situational sections.** A five-minute session and an eight-hour session use the same template; situational sections are omitted entirely (not filled with "none") so their absence carries signal.
+- **Required, conditionally-required, and situational sections.** Every handoff carries the required sections; Assumptions is conditionally required whenever a decision depended on something unverified or a fix wasn't confirmed; the rest are situational and omitted entirely (not filled with "none") so their absence carries signal. Thin (five-minute) sessions get a deliberately short template instead of padding the full one out.
+- **Handoffs chain.** Each one declares the prior handoff it continues from and which document wins on conflict, so a multi-session thread doesn't collapse into duplicate or contradictory state.
 
 ## When it triggers
 

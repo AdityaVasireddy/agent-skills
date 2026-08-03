@@ -28,7 +28,7 @@ The premise: model intelligence is rented — pricing and availability change un
 
 ### [session-handoff](https://github.com/AdityaVasireddy/agent-skills/blob/main/session-handoff) — v1
 
-Produces a structured end-of-session handoff so you can `/clear` and start a fresh agent without losing continuity — the next agent picks up by reading one document. Required sections (objective, status, decisions + rationale, key files, next action) plus situational sections included only when they apply. The audience is a future instance of the model, so it captures intent and reasoning, not implementation — anything recoverable from the diff or the code in seconds is deliberately left out.
+Produces a structured end-of-session handoff so you can `/clear` and start a fresh agent without losing continuity — each one declares the prior handoff it continues from, so the next agent follows the chain instead of re-deriving it. Required sections (objective, status, decisions + rationale, key files, next action), Assumptions when it's conditionally required, plus situational sections included only when they apply. The audience is a future instance of the model, so it captures intent and reasoning, not implementation — anything recoverable from the diff or the code in seconds is deliberately left out.
 
 The rules that make it trustworthy: a precision-claims rule (never state a path, number, or change you didn't observe this session), a self-consistency pass (sections describing the same system must agree before saving), and classification-by-manifestation for issues vs. risks vs. debt. One markdown file, no dependencies.
 

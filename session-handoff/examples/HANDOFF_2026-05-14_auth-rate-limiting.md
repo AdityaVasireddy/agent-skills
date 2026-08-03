@@ -1,4 +1,5 @@
 # Session Handoff — Add rate limiting to the auth login endpoint
+Continues from: none — first handoff for this thread
 
 ## Objective
 The login endpoint had no rate limiting, leaving it open to credential-stuffing. The user asked to add per-IP throttling without breaking the existing session-cookie flow. Key constraint that emerged mid-session: the limiter must fail *open* on backend outage — locking every user out is worse than a brief throttling gap.
@@ -7,6 +8,7 @@ The login endpoint had no rate limiting, leaving it open to credential-stuffing.
 - Completed: Per-IP sliding-window limiter added to `POST /auth/login`, wired to the shared Redis instance, verified under load.
 - In Progress: Applying the same limiter to `POST /auth/reset-password` — decorator added, not yet tested.
 - Blocked: Staging deploy waits on the Redis connection string being added to the staging secrets store (ops ticket OPS-2231).
+- Not yet built: no metrics or alerting on limiter trips — a 429 spike would currently go unnoticed.
 
 ## Decisions & Rationale
 - Sliding window over fixed window — chose sliding to avoid the burst-at-boundary problem where a fixed window lets 2x the limit through at the reset tick — implemented in `~/project/src/middleware/rate_limit.py`.
@@ -19,7 +21,8 @@ The login endpoint had no rate limiting, leaving it open to credential-stuffing.
 - `~/project/tests/test_rate_limit.py` — load test lives here; explains the verification below better than the diff does.
 
 ## Next Action
-Test the reset-password limiter (`test_rate_limit.py` has the login test to copy from), then confirm OPS-2231 is closed before attempting the staging deploy.
+Test the reset-password limiter — adapt the login test in `test_rate_limit.py` to the reset-password route.
+Done when: `pytest tests/test_rate_limit.py -k reset_password` passes and asserts the 11th attempt from one IP inside the window returns 429.
 
 ## Assumptions
 - 10/5min/IP is a guess, not a measured threshold (LOW confidence). No production login-rate data was available this session; the number should be revisited against real traffic before it's treated as final.
@@ -34,9 +37,9 @@ Test the reset-password limiter (`test_rate_limit.py` has the login test to copy
 
 ## Runtime & System State
 - Commit at handoff: `a1b9f30`
-- Background processes: none still running (local Redis was stopped after the fail-open test).
+- Long-lived processes: none still running (local Redis was stopped after the fail-open test).
 - Dev servers / ports: none left open.
 
 ## Open Questions
 **Needs User Input**
-- Should the reset-password limit match login (10/5min) or be stricter, given reset is a lower-frequency action? This changes the decorator argument and is a product call, not a technical one.
+- [non-blocking] Should the reset-password limit match login (10/5min) or be stricter, given reset is a lower-frequency action? This changes the decorator argument and is a product call, not a technical one — the pending test can run against the current default in the meantime.
