@@ -32,6 +32,12 @@ Produces a structured end-of-session handoff so you can `/clear` and start a fre
 
 The rules that make it trustworthy: a precision-claims rule (never state a path, number, or change you didn't observe this session), a self-consistency pass (sections describing the same system must agree before saving), and classification-by-manifestation for issues vs. risks vs. debt. One markdown file, no dependencies.
 
+### [deslopify](https://github.com/AdityaVasireddy/agent-skills/blob/main/deslopify) — v0.9.2
+
+Edits, drafts, or audits nonfiction prose for identifiable AI-writing patterns without flattening the writer's voice. A fixed precedence order protects facts, meaning, explicit instructions, and evidenced voice traits before pattern removal; terms of art and verbatim source material have explicit scope guards.
+
+Three modes cover direct editing, new drafting, and pattern detection without rewriting. The skill ships with a pass/fail quality gate, a blind-review harness, and separate overcorrection and undercorrection kill criteria. It is a public beta / release candidate hardened across thirteen adversarial review rounds; known open items are documented in `deslopify/KNOWN-LIMITATIONS.md`.
+
 ## The through-line
 
 The skills aren't a grab bag — they cover a project's lifecycle in order:
@@ -40,6 +46,7 @@ The skills aren't a grab bag — they cover a project's lifecycle in order:
 - **five-gate-method** — *how do I reason while building it?* (during work)
 - **engineering-historian** — *what did the work teach me that's worth keeping?* (after work)
 - **session-handoff** — *how do I preserve context for the next agent?* (across the context boundary)
+- **deslopify** — *how do I make the prose sound specific, direct, and human?* (communication)
 
 More skills landing here over time.
 
@@ -49,7 +56,7 @@ Skills are plain folders — drop one into whatever skills directory your agent 
 
 **engineering-historian specifically** ships two extra pieces beyond the skill folder (a hook script and a sweep prompt) because Claude Code hooks are invoked by file path, not by skill content. See `engineering-historian/INSTALL.md` for the two-step setup.
 
-**For skills without an automation layer** (crucible, five-gate-method, and session-handoff need no hook or script — crucible additionally ships a `docs/` folder of design documentation, which is for humans only and not loaded by the agent): copy the skill's folder into `.claude/skills/<name>/` in your project, or `~/.claude/skills/<name>/` globally. Other Agent Skills–compatible tools use their own convention — check that tool's docs.
+**For skills without an automation layer** (crucible, five-gate-method, session-handoff, and deslopify need no hook — crucible additionally ships a `docs/` folder of design documentation, while deslopify ships an optional evaluation harness): copy the skill's folder into `.claude/skills/<name>/` in your project, or `~/.claude/skills/<name>/` globally. Other Agent Skills–compatible tools use their own convention — check that tool's docs.
 
 ---
 
