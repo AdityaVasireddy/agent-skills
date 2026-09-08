@@ -78,13 +78,13 @@ The test is misattributed intention or emotion, not verb class. A system perform
 
 ## Fake attribution
 
-**Weasel attribution.** "Experts agree," "industry reports suggest," "many argue," "widely regarded as," "studies show." Name the source or cut the attribution. If the source is absent from the draft and the user did not ask for research, remove the attributed population claim rather than leaving it as a warning; preserve the writer's separately supported claim. If the remaining copy depends on that claim, use BLOCKED and name the missing source. Never invent one or soften an invented one into "some have suggested."
+**Weasel attribution.** "Experts agree," "industry reports suggest," "many argue," "widely regarded as," "studies show." Name the source or cut the attribution. If the source is absent from the draft and the user did not ask for research, remove the attributed population claim rather than leaving it as a warning; preserve the writer's separately supported claim, including a first-person admission joined to the attribution. Reconnect its subject explicitly when removing the population clause would leave a dangling pronoun; retain expressive words that carry self-reproach. If the remaining copy depends on that claim, use BLOCKED and name the missing source. Never invent one or soften an invented one into "some have suggested."
 
 ---
 
 ## Endings
 
-**Fake-profound kickers.** The final "deep" line that turns the point into a metaphor, aphorism, or mic-drop. Delete it. Do not rewrite it into a better metaphor. Do not preserve its rhythm. End on the clearest concrete sentence already in the draft. If the ending needs closure, add a plain takeaway or next action.
+**Fake-profound kickers.** The final "deep" line that turns the point into a metaphor, aphorism, or mic-drop. Delete it. Do not rewrite it into a better metaphor. Do not preserve its rhythm. End on the clearest concrete sentence already in the draft. A causal-sounding maxim is still redundant when the preceding example already demonstrates its entire lesson: ask what new fact, action, or personal stance the final line adds. If none, remove it. Do not replace it with an invented action just to supply closure. Preserve an explicit user-requested takeaway or a distinct personal judgment.
 
 **Summary-recap endings.** "In conclusion," "Ultimately," "Overall," or a final paragraph restating the piece. The reader was just there.
 

@@ -13,19 +13,31 @@ permissions:
 
 jobs:
   tooling:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.14']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6, Node 24
         with:
-          python-version: "3.x"
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6, Node 24
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install validation dependency
+        run: python -m pip install -r deslopify/requirements-dev.txt
       - name: Validate runtime structure
         run: python deslopify/scripts/validate.py deslopify
       - name: Run deterministic tooling tests
         run: python -m unittest discover -s deslopify/tests -v
-      - name: Build and verify reviewer package
+      - name: Build and verify all packages
+        shell: bash
         run: |
-          python deslopify/scripts/bundle.py --kind reviewer --output "$RUNNER_TEMP/reviewer.zip"
-          python deslopify/scripts/bundle.py --verify "$RUNNER_TEMP/reviewer.zip"
-          unzip -l "$RUNNER_TEMP/reviewer.zip" | grep -q 'BUILD_MANIFEST.json'
-          ! unzip -l "$RUNNER_TEMP/reviewer.zip" | grep -q scoring-sheet
+          set -euo pipefail
+          for kind in reviewer install source; do
+            python deslopify/scripts/bundle.py --kind "$kind" --output "$RUNNER_TEMP/$kind.zip"
+            python deslopify/scripts/bundle.py --verify "$RUNNER_TEMP/$kind.zip"
+          done

@@ -1,6 +1,10 @@
 ---
 name: deslopify
-description: Remove AI writing patterns from nonfiction prose while preserving the writer's voice. Do not activate for fiction, poetry, or screenwriting, where these patterns may be deliberate craft; that exclusion wins before any "make this less AI" trigger. Three modes - edit a draft, draft new prose under the constraints, or detect patterns without rewriting. Use for nonfiction writing the user wants sharpened, tightened, de-AI'd, or made more direct; for audits of whether prose reads as AI-written; or for blog posts, articles, essays, emails, newsletters, LinkedIn or X posts, landing pages, release notes, READMEs, and similar nonfiction. Do not use for code, code comments, structured data, translation, or summarizing a document for internal use.
+description: >-
+  Edit, draft, or audit nonfiction prose for named writing patterns while preserving
+  factual meaning and the writer's voice. Use for requests to sharpen, tighten,
+  remove generic phrasing, or make nonfiction sound less AI-written. Do not use
+  for fiction, poetry, screenwriting, code, translation, or internal summaries.
 ---
 
 # Deslopify
@@ -25,7 +29,7 @@ Style rules never override the four tiers above them. A named pattern the user e
 
 > **Contract `SCOPE-PROTECTION`**
 
-**If retained, do not alter.** Names, terminology, code, citations, and verbatim/source quotation wording survive intact wherever they appear, unless item 1 authorizes the change or the user marked the quoted copy editable. Provenance decides quotation protection, not the quotation marks. You may still delete a whole sentence or paragraph that happens to contain one, when the user's request, the meaning tier, or a length target authorizes deleting that span. Removing a duplicate sentence is not a scope violation because a product name occurs inside it.
+**If retained, do not alter.** Names, terminology, code, citations, and verbatim/source quotation wording survive intact wherever they appear, unless item 1 authorizes the change or the user marked the quoted copy editable. Provenance decides quotation protection, not the quotation marks. Treat the user's identification of source quotations as evidence; do not require external proof. Preserve ambiguous quotations and ask only if editing them is necessary. You may still delete a whole sentence or paragraph that happens to contain one, when the user's request, the meaning tier, or a length target authorizes deleting that span. Removing a duplicate sentence is not a scope violation because a product name occurs inside it.
 
 **Quotations get the stronger guard**, but keyed on provenance, not punctuation. It covers material that is or is reasonably understood to be verbatim source: a third-party quote, a citation, a transcript. Copy the user marks as their own and editable — a pull quote, draft testimonial, dialogue they are revising — follows ordinary Edit rules. Do not delete a genuine quotation to satisfy a style rule. Delete it only when the surrounding passage goes for an independent reason and the user's request authorizes that. A guard that stops you rewording a quote but lets a pattern rule delete it protects nothing.
 
@@ -44,7 +48,7 @@ The user asks you to write something new. Apply the same patterns and words as c
 
 > **Contract `DRAFT-VOICE-TRANSFER`**
 
-Build the voice model from the user's samples if they gave any, then treat protected traits as a **palette**: use the ones compatible with the requested format and the supplied facts, and leave the rest. A sample is not source text, so nothing in it is obligatory. Never manufacture uncertainty, profanity, or an admission the facts do not support just to match a sample. If they gave no samples, write plainly and say once that the voice is generic.
+Build the voice model from the user's samples if they gave any, then treat protected traits as a **palette**: use the ones compatible with the requested format and the supplied facts, and leave the rest. A sample supplies stylistic evidence, not facts for the new draft. Do not carry its events, beliefs, product behavior, or personal admissions into a new subject unless the user separately supplies or confirms them. Nothing in a sample is obligatory. Never manufacture uncertainty, profanity, or an admission the facts do not support just to match a sample. If they gave no samples, write plainly and say once that the voice is generic. A word target does not authorize new product capabilities, implications, or filler; if the supplied facts cannot support the target, use CLOSEST COMPLIANT and state the shortfall.
 
 ### Detect
 The user asks whether something is slop, or wants an audit without a rewrite. Name each pattern, quote the line, give the fix in a few words. Do not rewrite, do not score, do not guess whether AI wrote it. Detectors guess. Named patterns are evidence the reader can check for themselves.
@@ -153,8 +157,9 @@ Run these before the gate. Each is a yes/no test with a named fix.
 - Three consecutive sentences the same length, in prose where the repetition sounds mechanical? Break one. Deliberately parallel structures are exempt: stepwise instructions, procedures, and lists rendered as sentences.
 - Em dash? Remove unless it clearly beats a comma, period, or parenthesis. None in short copy, 1 to 2 in long drafts.
 
-These style checks apply to user-provided or user-requested prose, not to the instructional text in this skill or its evaluation materials.
 - Claim or self-description that could belong to any company? Portability test failed. Cut or specify. Accurate procedural statements are exempt.
+
+These style checks apply to the prose being edited or drafted. Skill instructions and evaluation materials are development artifacts, assessed for correctness rather than literary style.
 
 ## Output
 

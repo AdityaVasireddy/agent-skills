@@ -32,7 +32,7 @@ Produces a structured end-of-session handoff so you can `/clear` and start a fre
 
 The rules that make it trustworthy: a precision-claims rule (never state a path, number, or change you didn't observe this session), a self-consistency pass (sections describing the same system must agree before saving), and classification-by-manifestation for issues vs. risks vs. debt. One markdown file, no dependencies.
 
-### [deslopify](https://github.com/AdityaVasireddy/agent-skills/blob/main/deslopify) — v1.0.0-rc.1
+### [deslopify](https://github.com/AdityaVasireddy/agent-skills/blob/main/deslopify) — v1.0.0-rc.2
 
 Edits, drafts, or audits nonfiction prose for identifiable AI-writing patterns without flattening the writer's voice. A fixed precedence order protects facts, meaning, explicit instructions, and evidenced voice traits before pattern removal; terms of art and verbatim source material have explicit scope guards.
 
@@ -56,7 +56,7 @@ Skills are plain folders — drop one into whatever skills directory your agent 
 
 **engineering-historian specifically** ships two extra pieces beyond the skill folder (a hook script and a sweep prompt) because Claude Code hooks are invoked by file path, not by skill content. See `engineering-historian/INSTALL.md` for the two-step setup.
 
-**For skills without an automation layer** (crucible, five-gate-method, session-handoff, and deslopify need no hook — crucible additionally ships a `docs/` folder of design documentation, while deslopify ships an optional evaluation harness): copy the skill's folder into `.claude/skills/<name>/` in your project, or `~/.claude/skills/<name>/` globally. Other Agent Skills–compatible tools use their own convention — check that tool's docs.
+**For skills without an automation layer** (crucible, five-gate-method, and session-handoff): copy the skill's folder into `.claude/skills/<name>/` in your project, or `~/.claude/skills/<name>/` globally. Crucible additionally ships a `docs/` folder of design documentation. For **Deslopify**, use its generated install archive; see [build and installation instructions](deslopify/README.md). Other Agent Skills–compatible tools use their own convention — check that tool's docs.
 
 ---
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 import subprocess
 import sys
@@ -14,31 +15,39 @@ SCHEMA = 1
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ("SKILL.md", "eval.md", "references/formats.md", "references/patterns.md", "references/words.md")
 REVIEWER = RUNTIME + ("evaluation/EVALUATION.md", "evaluation/review-prompt.md", "evaluation/cases.json")
-INSTALL = RUNTIME + ("README.md", "LICENSE", "VERSION")
-EXCLUDED = {"reviewer-bundle", "reviewer-bundle.zip", "source.zip", "install.zip", "__pycache__"}
+INSTALL = RUNTIME + ("agents/openai.yaml", "LICENSE", "VERSION")
+# Source is the complete skill development package, not the monorepo or a disk snapshot.
+# Explicit membership prevents logs, local secrets, symlinks, and prior builds from shipping.
+SOURCE = tuple(sorted(set(INSTALL + REVIEWER + (
+    '.gitattributes', '.gitignore', 'README.md', 'CHANGELOG.md', 'KNOWN-LIMITATIONS.md',
+    'requirements-dev.txt', 'evaluation/scoring-sheet.md',
+    'scripts/bundle.py', 'scripts/bundle.sh', 'scripts/validate.py',
+    'tests/test_tooling.py', 'tests/test_release.py',
+))))
 
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+def unique_json(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f'duplicate manifest key: {key}')
+        result[key] = value
+    return result
 
 def read_members(root: Path, names: tuple[str, ...]) -> dict[str, bytes]:
     members: dict[str, bytes] = {}
     for name in names:
         path = root / name
-        if not path.is_file():
+        if path.is_symlink() or not path.is_file() or root.resolve() not in path.resolve().parents:
             raise SystemExit(f"missing required package member: {name}")
-        members[name] = path.read_bytes()
+        # All declared members are UTF-8 text. Normalize checkout line endings.
+        members[name] = path.read_bytes().decode('utf-8').replace('\r\n', '\n').encode('utf-8')
     return members
 
 def source_members(root: Path) -> dict[str, bytes]:
-    names = []
-    for path in sorted(root.rglob("*")):
-        if path.is_file():
-            relative = path.relative_to(root).as_posix()
-            parts = set(relative.split("/"))
-            if not any(relative == item or relative.startswith(item + "/") for item in EXCLUDED):
-                if relative != "BUILD_MANIFEST.json" and "__pycache__" not in parts and not relative.endswith(".pyc"):
-                    names.append(relative)
-    return read_members(root, tuple(names))
+    return read_members(root, SOURCE)
 
 def manifest(kind: str, members: dict[str, bytes]) -> bytes:
     payload = {"schema": SCHEMA, "kind": kind, "files": {
@@ -76,28 +85,36 @@ def write_zip(output: Path, kind: str, members: dict[str, bytes]) -> None:
 
 def verify(archive_path: Path) -> None:
     with zipfile.ZipFile(archive_path) as archive:
+        if archive.comment:
+            raise SystemExit('archive comment is not permitted')
+        for info in archive.infolist():
+            if (info.create_system != 3 or info.external_attr != 0o100644 << 16
+                    or info.date_time != (1980, 1, 1, 0, 0, 0)
+                    or info.compress_type != zipfile.ZIP_STORED or info.flag_bits & 1
+                    or info.extra or info.comment):
+                raise SystemExit(f'noncanonical or unsafe ZIP member metadata: {info.filename}')
         names = archive.namelist()
         if len(names) != len(set(names)) or names != sorted(names):
             raise SystemExit("archive member order or uniqueness is invalid")
         if "BUILD_MANIFEST.json" not in names:
             raise SystemExit("archive is missing BUILD_MANIFEST.json")
-        raw = json.loads(archive.read("BUILD_MANIFEST.json"))
-        if raw.get("schema") != SCHEMA or not isinstance(raw.get("files"), dict):
+        raw = json.loads(archive.read("BUILD_MANIFEST.json"), object_pairs_hook=unique_json)
+        if not isinstance(raw, dict) or type(raw.get("schema")) is not int or raw.get("schema") != SCHEMA or not isinstance(raw.get("files"), dict):
             raise SystemExit("manifest schema or files map is invalid")
         kind = raw.get("kind")
-        expected = {"reviewer": set(REVIEWER), "install": set(INSTALL), "source": None}
+        expected = {"reviewer": set(REVIEWER), "install": set(INSTALL), "source": set(SOURCE)}
         listed = set(raw.get("files", {}))
-        if kind not in expected:
+        if not isinstance(kind, str) or kind not in expected:
             raise SystemExit(f"unknown package kind: {kind!r}")
-        if expected[kind] is not None and listed != expected[kind]:
+        if listed != expected[kind]:
             raise SystemExit(f"{kind} package member set is invalid")
-        if kind == "source" and any(name.startswith("reviewer-bundle") for name in listed):
-            raise SystemExit("source package contains generated reviewer output")
         if set(names) != listed | {"BUILD_MANIFEST.json"}:
             raise SystemExit("archive members do not match the manifest")
         for name, metadata in raw["files"].items():
             if not isinstance(metadata, dict) or set(metadata) != {"sha256", "size"}:
                 raise SystemExit(f"archive member metadata is invalid: {name}")
+            if type(metadata['size']) is not int or metadata['size'] < 0 or not isinstance(metadata['sha256'], str) or not re.fullmatch(r'[0-9a-f]{64}', metadata['sha256']):
+                raise SystemExit(f"archive member metadata types are invalid: {name}")
             data = archive.read(name)
             if len(data) != metadata["size"] or digest(data) != metadata["sha256"]:
                 raise SystemExit(f"archive member failed manifest verification: {name}")
@@ -130,4 +147,7 @@ def main() -> int:
     return 0
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    try:
+        raise SystemExit(main())
+    except (OSError, ValueError, zipfile.BadZipFile, subprocess.CalledProcessError) as error:
+        raise SystemExit(f'package operation failed: {error}') from None

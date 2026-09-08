@@ -83,4 +83,4 @@ Missing facts required to pass:
 
 Return this instead of a compliant draft, not alongside one. Applies only to factual insufficiency. A fail caused by a user constraint colliding with a higher tier takes the **CONSTRAINT-CONFLICT** exit in `SKILL.md` instead. A fail you can clear by editing is neither.
 
-Evaluator machinery (kill criterion, regression assertion, corpus) lives in `EVALUATION.md`. It is not loaded at runtime.
+This gate is a self-check of the proposed output, not an independently measured quality score.

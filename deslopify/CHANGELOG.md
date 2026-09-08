@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.0.0-rc.2 — release validation (2026-09-08)
+
+- Parse real YAML with duplicate-key and field-type checks; use folded frontmatter and Codex UI metadata
+- Fix Bash output argument expansion and allow an explicit Python interpreter
+- Declare exact source/install/reviewer inventories; exclude all incidental artifacts and remove the development README from installs
+- Normalize text and ZIP metadata for reproducible Windows/Linux packages; expand invalid-archive checks
+- Make cases.json the sole corpus and repair literal escaped paragraph separators
+- Preserve separately supported admissions when removing attribution, discriminate redundant causal closers, and prevent voice samples from supplying facts
+- Expand CI to Windows/Linux and Python 3.11/3.14 using pinned Node 24 actions
+- Retain fresh blind evaluation and operator scoring before making a stable-release claim
+
 ## v1.0.0-rc.1 — release candidate (2026-09)
 
 - Unsourced population claims now lose their attribution in Edit mode when no source is supplied; dependent copy reaches BLOCKED instead of retaining a warning-only claim

@@ -1,0 +1,2 @@
+# Needed only for validation and building; the installed skill needs no Python.
+PyYAML==6.0.3

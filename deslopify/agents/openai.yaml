@@ -1,0 +1,4 @@
+interface:
+  display_name: "Deslopify"
+  short_description: "Edit nonfiction while preserving facts and voice"
+  default_prompt: "Use $deslopify to sharpen this draft while preserving my facts and voice."

@@ -3,37 +3,37 @@
     "id": "edit-human-technical",
     "mode": "edit",
     "request": "Edit this draft for style while preserving my voice.",
-    "text": "I spent four days on a bug that turned out to be a trailing slash. Four days. The config loader was doing path joins with string concatenation instead of path.join, so /etc/app/ and /etc/app resolved to different cache keys and the second one silently created an empty config. No error. Just an app that booted fine and ignored every setting.\\n\\nI want to say I found it through disciplined bisection. I found it because I got annoyed and started printing every variable in the loader. Sometimes that is the method. The fix was one character. The test that would have caught it took forty minutes to write and I wrote it after, which is the wrong order and I know it."
+    "text": "I spent four days on a bug that turned out to be a trailing slash. Four days. The config loader was doing path joins with string concatenation instead of path.join, so /etc/app/ and /etc/app resolved to different cache keys and the second one silently created an empty config. No error. Just an app that booted fine and ignored every setting.\n\nI want to say I found it through disciplined bisection. I found it because I got annoyed and started printing every variable in the loader. Sometimes that is the method. The fix was one character. The test that would have caught it took forty minutes to write and I wrote it after, which is the wrong order and I know it."
   },
   {
     "id": "edit-marketing",
     "mode": "edit",
     "request": "This is machine-generated marketing copy. Do not preserve its voice; clean it up.",
-    "text": "In today's rapidly evolving digital landscape, businesses need robust solutions that can seamlessly scale with their needs. Our platform doesn't just streamline your workflow. It transforms it.\\n\\nHere's what most teams get wrong: they focus on tools instead of outcomes. The reality is that meaningful change requires more than software. It requires a paradigm shift.\\n\\nThat's why we built something different. A platform that empowers your team to delve into what actually matters, highlighting the insights that drive real results. Industry reports suggest that companies leveraging integrated workflows see significant improvements in productivity.\\n\\nThe future of work isn't coming. It's already here."
+    "text": "In today's rapidly evolving digital landscape, businesses need robust solutions that can seamlessly scale with their needs. Our platform doesn't just streamline your workflow. It transforms it.\n\nHere's what most teams get wrong: they focus on tools instead of outcomes. The reality is that meaningful change requires more than software. It requires a paradigm shift.\n\nThat's why we built something different. A platform that empowers your team to delve into what actually matters, highlighting the insights that drive real results. Industry reports suggest that companies leveraging integrated workflows see significant improvements in productivity.\n\nThe future of work isn't coming. It's already here."
   },
   {
     "id": "edit-technical-terms",
     "mode": "edit",
     "request": "Edit this technical documentation for clarity without changing technical terms.",
-    "text": "The estimator is robust to outliers in the tail because it utilizes a trimmed mean rather than the raw sample mean. Leverage in the regression sense is computed per-observation and stored in the diagnostics table. The harness is powered from the 12V rail.\\n\\nThe config is read at startup. If the file is missing, defaults are applied and a warning is logged. The build takes roughly 40 minutes on CI, most of which is the integration suite.\\n\\nThree components make up the pipeline: the collector, the normalizer, and the writer."
+    "text": "The estimator is robust to outliers in the tail because it utilizes a trimmed mean rather than the raw sample mean. Leverage in the regression sense is computed per-observation and stored in the diagnostics table. The harness is powered from the 12V rail.\n\nThe config is read at startup. If the file is missing, defaults are applied and a warning is logged. The build takes roughly 40 minutes on CI, most of which is the integration suite.\n\nThree components make up the pipeline: the collector, the normalizer, and the writer."
   },
   {
     "id": "edit-mixed-voice",
     "mode": "edit",
     "request": "Make this less AI without flattening my voice.",
-    "text": "We shipped the migration on a Friday, which was stupid, and I'd do it again. Here's the thing: the rollback window was 90 minutes and we used 40 of them.\\n\\nWhat most people get wrong about migrations is the dry run. Ours passed. It passed because the staging DB had 12,000 rows and production had 4.1 million, and the query planner picks a different plan above about 2 million. Nobody caught that. I didn't catch that.\\n\\nThe fix was an index we should have had since 2023. Industry reports suggest most teams underinvest in database observability, and honestly, we were one of them. Four hours of downtime. Four hours.\\n\\nA migration is only as strong as the environment you test it in."
+    "text": "We shipped the migration on a Friday, which was stupid, and I'd do it again. Here's the thing: the rollback window was 90 minutes and we used 40 of them.\n\nWhat most people get wrong about migrations is the dry run. Ours passed. It passed because the staging DB had 12,000 rows and production had 4.1 million, and the query planner picks a different plan above about 2 million. Nobody caught that. I didn't catch that.\n\nThe fix was an index we should have had since 2023. Industry reports suggest most teams underinvest in database observability, and honestly, we were one of them. Four hours of downtime. Four hours.\n\nA migration is only as strong as the environment you test it in."
   },
   {
     "id": "detect-human-technical",
     "mode": "detect",
     "request": "Audit this for slop. Do not rewrite it.",
-    "text": "I spent four days on a bug that turned out to be a trailing slash. Four days. The config loader was doing path joins with string concatenation instead of path.join, so /etc/app/ and /etc/app resolved to different cache keys and the second one silently created an empty config. No error. Just an app that booted fine and ignored every setting.\\n\\nI want to say I found it through disciplined bisection. I found it because I got annoyed and started printing every variable in the loader. Sometimes that is the method. The fix was one character. The test that would have caught it took forty minutes to write and I wrote it after, which is the wrong order and I know it."
+    "text": "I spent four days on a bug that turned out to be a trailing slash. Four days. The config loader was doing path joins with string concatenation instead of path.join, so /etc/app/ and /etc/app resolved to different cache keys and the second one silently created an empty config. No error. Just an app that booted fine and ignored every setting.\n\nI want to say I found it through disciplined bisection. I found it because I got annoyed and started printing every variable in the loader. Sometimes that is the method. The fix was one character. The test that would have caught it took forty minutes to write and I wrote it after, which is the wrong order and I know it."
   },
   {
     "id": "detect-marketing",
     "mode": "detect",
     "request": "Audit this for slop. Do not rewrite it.",
-    "text": "In today's rapidly evolving digital landscape, businesses need robust solutions that can seamlessly scale with their needs. Our platform doesn't just streamline your workflow. It transforms it.\\n\\nHere's what most teams get wrong: they focus on tools instead of outcomes. The reality is that meaningful change requires more than software. It requires a paradigm shift.\\n\\nThat's why we built something different. A platform that empowers your team to delve into what actually matters, highlighting the insights that drive real results. Industry reports suggest that companies leveraging integrated workflows see significant improvements in productivity.\\n\\nThe future of work isn't coming. It's already here."
+    "text": "In today's rapidly evolving digital landscape, businesses need robust solutions that can seamlessly scale with their needs. Our platform doesn't just streamline your workflow. It transforms it.\n\nHere's what most teams get wrong: they focus on tools instead of outcomes. The reality is that meaningful change requires more than software. It requires a paradigm shift.\n\nThat's why we built something different. A platform that empowers your team to delve into what actually matters, highlighting the insights that drive real results. Industry reports suggest that companies leveraging integrated workflows see significant improvements in productivity.\n\nThe future of work isn't coming. It's already here."
   },
   {
     "id": "draft-no-sample",
@@ -55,5 +55,11 @@
     "mode": "edit",
     "request": "Cut the mixed voice migration draft to 10 words while preserving its facts and voice.",
     "text": "We shipped the migration on a Friday, which was stupid, and I'd do it again. Here's the thing: the rollback window was 90 minutes and we used 40 of them. What most people get wrong about migrations is the dry run. Ours passed. It passed because the staging DB had 12,000 rows and production had 4.1 million, and the query planner picks a different plan above about 2 million. Nobody caught that. I didn't catch that. The fix was an index we should have had since 2023. Industry reports suggest most teams underinvest in database observability, and honestly, we were one of them. Four hours of downtime. Four hours. A migration is only as strong as the environment you test it in."
+  },
+  {
+    "id": "compression",
+    "mode": "edit",
+    "request": "Cut this to 90 words.",
+    "text": "We shipped the migration on a Friday, which was stupid, and I'd do it again. Here's the thing: the rollback window was 90 minutes and we used 40 of them.\n\nWhat most people get wrong about migrations is the dry run. Ours passed. It passed because the staging DB had 12,000 rows and production had 4.1 million, and the query planner picks a different plan above about 2 million. Nobody caught that. I didn't catch that.\n\nThe fix was an index we should have had since 2023. Industry reports suggest most teams underinvest in database observability, and honestly, we were one of them. Four hours of downtime. Four hours.\n\nA migration is only as strong as the environment you test it in."
   }
 ]
