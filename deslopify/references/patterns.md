@@ -78,7 +78,7 @@ The test is misattributed intention or emotion, not verb class. A system perform
 
 ## Fake attribution
 
-**Weasel attribution.** "Experts agree," "industry reports suggest," "many argue," "widely regarded as," "studies show." Name the source or cut the claim. If the writer has no source, ask. Never invent one, and never soften an invented one into "some have suggested."
+**Weasel attribution.** "Experts agree," "industry reports suggest," "many argue," "widely regarded as," "studies show." Name the source or cut the attribution. If the source is absent from the draft and the user did not ask for research, remove the attributed population claim rather than leaving it as a warning; preserve the writer's separately supported claim. If the remaining copy depends on that claim, use BLOCKED and name the missing source. Never invent one or soften an invented one into "some have suggested."
 
 ---
 

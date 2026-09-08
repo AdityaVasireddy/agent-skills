@@ -2,9 +2,9 @@
 
 Current, genuinely unresolved issues as of this release. Everything here is checkable against the runtime; if a claim below no longer matches the files, the file is stale and should be corrected.
 
-## Undercorrection is not yet measured
+## v1.0.0-rc.1 undercorrection result
 
-The evaluation defines two independent kill criteria: overcorrection (good writing wrongly edited) and undercorrection (slop wrongly left in). Overcorrection has read 0/4 across many corpus runs. **Undercorrection has never been scored**, because it requires an operator to run the hidden oracle in `evaluation/scoring-sheet.md` against a reviewer's actual removal decisions — something the blind reviewer bundle cannot produce by design. Until that run happens, only half the quality bar has a number behind it. The one recorded partial observation (round 5) was 1/4: a causal-sounding closing line was preserved that the oracle marks for removal, suggesting the fake-profound-kicker rule may under-fire on closers phrased as lessons.
+The baseline blind review recorded 0/4 predicted writer reversions, but that is a model proxy rather than author validation. Against the withheld four-removal oracle, the baseline Draft D output missed the unsourced attribution removal (1/4, 25%, fail). The RC.1 runtime rule removes that attribution when no source is supplied; a fresh independent run and operator ledger are still required before a v1.0 claim.
 
 ## Runtime size exceeds the original draft budget
 

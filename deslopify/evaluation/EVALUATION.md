@@ -18,7 +18,7 @@ An edit is one independently reversible before → after operation, listed as on
 
 A draft with nothing to change produces 0/0 on both and tests nothing. It is not evidence of a pass.
 
-Detect regression: on Draft A (human-written), `voice` suppression must be nonzero and `reported` must be 0. Zero voice suppression there means the rule is narrated rather than run. Treat as a fail. (Scale to three human drafts only if the corpus is later expanded to include them.)
+Detect regression: a human-voice case must exercise the voice suppression bucket when the candidate form is genuinely protected. A zero suppression count is a failure only when the case contains an independently evidenced protected form; do not hard-code a corpus-specific counter into this evaluator.
 
 ## Regression assertion
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.0-rc.1 — release candidate (2026-09)
+
+- Unsourced population claims now lose their attribution in Edit mode when no source is supplied; dependent copy reaches BLOCKED instead of retaining a warning-only claim
+- Added deterministic reviewer, install, and source package builds with per-file manifests and archive verification
+- Added strict required-file, frontmatter, duplicate-contract, dangling-contract, orphan-contract, and precedence-alias validation
+- Added raw evaluation cases without expected answers so blind review inputs are separate from operator scoring
+- Added deterministic tooling tests and GitHub Actions coverage for structural validation, package reproducibility, and oracle isolation
+- Clarified activation exclusions, same-tier conflict handling, high-stakes unlisted-format behavior, and runtime-only scope for style checks
+
 ## v0.9.2 — public beta (2026-09)
 
 - Fixed a dead build-time substitution: the runtime-size regex stopped matching after its target text changed, so counts were silently omitted from the reviewer prompt. Replaced with an asserted {{RUNTIME_SIZE}} sentinel that fails the build if missing

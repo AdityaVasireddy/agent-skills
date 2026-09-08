@@ -40,7 +40,7 @@ The gate checks **authorization**, not unconditional re-application of the patte
 - Throat-clearing openers, faux-insight setups, rhetorical setups, meta-joiners
 - Binary contrasts, negative listings, colon reveals, dramatic fragmentation, synonym cycling
 - Superficial `-ing` analysis, importance puffery, interpretive metadiscourse, vague declaratives, fake-strong verbs
-- Weasel attribution: sourced, cut, or flagged, with nothing invented
+- Weasel attribution: sourced or cut when the source is absent; never retain an unsupported attributed population claim as a warning-only edit
 - Portability failures in claims, framing, bios, and marketing copy. Accurate procedural and behavioral statements are out of scope
 - Fake-profound kicker deleted rather than improved
 - Summary-recap ending cut

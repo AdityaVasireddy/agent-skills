@@ -2,3 +2,5 @@
 reviewer-bundle/
 skill-package/
 *.zip
+__pycache__/
+*.pyc

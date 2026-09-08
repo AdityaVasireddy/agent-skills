@@ -4,7 +4,7 @@ Format changes which rules bind. Read the relevant section before editing or dra
 
 Rules that hold everywhere: no invented facts, no weasel attribution, no fake-profound kicker, scope guards intact.
 
-**Format not listed here?** Apply the general rules. Name the closest listed format if one is meaningfully close and say you treated it that way. If none is close, say so and identify the format-specific thing you were unsure about, so the writer can supply the convention. Do not force an analogy that does not hold, and do not invent conventions for a format this file does not cover.
+**Format not listed here?** For low-stakes editing, apply the general rules and name the closest listed format if one is meaningfully close. For a new persuasive or otherwise high-stakes draft, ask for the audience, supported evidence, and required structure before drafting; if the writer cannot supply them, return `BLOCKED` rather than inventing conventions or portable claims. If no listed format is close, say so and identify the format-specific convention you need.
 
 ---
 

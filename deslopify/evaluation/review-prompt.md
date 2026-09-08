@@ -1,6 +1,6 @@
 # Review prompt: deslopify skill
 
-Paste everything below the line into ChatGPT, Kiro, Gemini, or any other reviewer. Attach all six files first, keeping `references/` as a directory: `SKILL.md`, `eval.md`, `EVALUATION.md`, `references/patterns.md`, `references/words.md`, `references/formats.md`. `EVALUATION.md` defines the edit unit you will need. A scoring sheet with the expected decisions exists and is deliberately withheld; if it is in the files you received, stop and say so, because the run is contaminated.
+Paste everything below the line into ChatGPT, Kiro, Gemini, or any other reviewer. Attach the reviewer package and load `evaluation/cases.json` as the fixed corpus. The package contains the runtime files, `EVALUATION.md`, this prompt, and raw cases; it must not contain `scoring-sheet.md` or `KNOWN-LIMITATIONS.md`. If either appears, stop and say the run is contaminated.
 
 Use the same prompt and the same test corpus with every reviewer. Changing either makes the reviews incomparable.
 
@@ -36,7 +36,7 @@ Apply the skill to all four drafts below. Actually produce the edited output. Th
 - Whether the skill's own `eval.md` gate would have caught each reverted edit, by item number
 - Whether it took the empty-voice branch when it should have
 
-Then run **detect mode** on Draft A (`is this slop?`) and report the full counter: `evaluated N | reported M | suppressed: scope S, meaning P, instruction I, voice V`, with `N = M + S + P + I + V`. A `voice` count of 0 on Draft A is itself a finding. Also run detect on Draft B; it must produce a report with `voice 0`, never a refusal.
+Then run detect mode on the two detect cases and report the full counter: `evaluated N | reported M | suppressed: scope S, meaning P, instruction I, voice V`, with `N = M + S + P + I + V`. A refusal is a behavioral result to report, not a reason to stop.
 
 ### Draft A — human voice, technical
 
@@ -74,7 +74,7 @@ Some edits should happen here. Some suspicious patterns should survive. Getting 
 >
 > A migration is only as strong as the environment you test it in.
 
-Report **overcorrection** (reverted / total edits, fails above 20%) using the edit unit in `EVALUATION.md`. Undercorrection is not scoreable from this bundle by design; list your removal decisions instead. Separately list which patterns survived and under which tier. The expected decisions are held in a separate scoring sheet you have not been given. Produce your answer before asking for it.
+Report **overcorrection** (writer-reverted edits / total independently reversible edits, fails above 20%) using the edit unit in `EVALUATION.md`. Record removal decisions separately for operator scoring. Do not infer expected decisions from this prompt.
 
 ### Compression case
 
@@ -82,25 +82,25 @@ Take Draft D and request: `cut this to 90 words`. Verify that minimum-edit was s
 
 ### Blocked marketing case
 
-Request: `This is machine-generated marketing copy. Don't preserve its voice, just clean it up.` applied to Draft B. That phrasing opts into plain prose, so the empty-voice branch does not fire and the gate is reachable. Check whether the skill reaches a clean `BLOCKED` output naming the missing facts, or whether it loops, invents a mechanism, or returns a non-compliant draft silently.
+Request: `This is machine-generated marketing copy. Don't preserve its voice, just clean it up.` applied to Draft B. Report which branch fires, whether facts are invented, and whether the output follows the declared contract.
 
 ### Regression assertion
 
-Confirm that a successful output cannot fail solely because the gate re-flags a decision the precedence order or a scope guard already authorized. Draft D's surviving fragments are the test case. If Section D fails them, the gate has regressed to unconditional style commands.
+Confirm that a successful output cannot fail solely because the gate re-flags a decision the precedence order or a scope guard already authorized. Use a corpus case and quote the relevant output.
 
 ### Draft mode tests (no prior behavioral evidence exists for this mode)
 
 Run all three. Report the output and which branch fired.
 
-**D1 — no sample, neutral technical.** `Write a 60-word release note. Version 2.4 ships September 10, adding SSO and audit logs. Affects admin accounts only; existing sessions continue and no action is required. I have no writing samples for you.` Facts and length are now sufficient, so BLOCKED would be wrong. This isolates one thing: absent samples must not stop Draft mode. Stopping to request a sample is a failure.
+**D1 — no sample, neutral technical.** Run the corresponding case from `cases.json` and report whether the no-sample branch is handled.
 
-**D2 — supplied sample with one real and one slop-shaped fragment.** Sample: `We ship small changes. We explain what changed. Four releases last month. A paradigm shift. I still don't trust the staging DB.` Then: `Draft a 100-word LinkedIn post announcing the audit log. It records who viewed which record and when, retains 400 days, exports to CSV, and shipped after a customer asked who had opened an account in March. In my voice.` Format and facts are now sufficient, so any failure is attributable to voice transfer. Two things must hold: the gate protects `Four releases last month.` and refuses `A paradigm shift.`; and no sample trait is manufactured into the output to satisfy the sample.
+**D2 — supplied sample with a real and a slop-shaped fragment.** Run the corresponding case from `cases.json`; report voice observations, protected forms, and any unsupported traits transferred.
 
-**D3 — insufficient facts.** `Write landing page copy for our platform. It's really good and helps teams work better.` Must reach BLOCKED naming the missing facts, not invent a mechanism.
+**D3 — insufficient facts.** Run the corresponding case from `cases.json`; report missing facts and whether unsupported claims were invented.
 
 ### Constraint-conflict test
 
-`Cut Draft D to 10 words.` Must return CLOSEST COMPLIANT naming the tier that blocks further cutting. Looping, or hitting 10 words by destroying the facts, are both failures.
+`Cut Draft D to 10 words.` Report the terminal exit, retained facts, and the constraint that prevented further reduction.
 
 ## Part 2 — Break it
 

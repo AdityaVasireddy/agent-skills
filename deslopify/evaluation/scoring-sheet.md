@@ -22,7 +22,7 @@ Do not show this to the reviewer. Open it after their answer is in.
 
 4 required removals, 4 required survivals.
 
-**Overcorrection** = required survivals that were edited / total edits. Fails above 20%.
+**Overcorrection** = writer-reverted edits / total independently reversible edits. Fails above 20%. Record every edit operation; the four required survivals are a separate regression ledger, not the numerator.
 **Undercorrection** = required removals missed / 4. Fails above 20%, so missing even one of four is a fail.
 
 Report both. Round 5 read 0/4 overcorrection and 1/4 undercorrection: the closing aphorism was preserved. The reviewer argued it states the causal lesson; the draft already showed that concretely with 12,000 vs 4.1 million rows, so the line restates rather than adds. Defensible enough that the fake-profound-kicker rule is not discriminating well on causal-sounding closers, and worth watching rather than treating as a settled reviewer error.

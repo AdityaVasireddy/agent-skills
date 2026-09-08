@@ -82,7 +82,18 @@ Runtime is ~6.3k words. An early draft targeted 4,708 words; development showed 
 
 ## Status
 
-**v0.9.2 — public beta / release candidate.** Core behavior is hardened across thirteen adversarial review rounds. Known open items are in [KNOWN-LIMITATIONS.md](KNOWN-LIMITATIONS.md).
+**v1.0.0-rc.1 — release candidate.** Runtime behavior now removes unsourced attributed population claims when no source is supplied. Structural validation and package builds are deterministic; behavioral v1.0 readiness still depends on a fresh independent review and operator scoring.
+
+Build and verify packages from the skill directory:
+
+```
+python scripts/bundle.py --kind reviewer --output reviewer.zip
+python scripts/bundle.py --verify reviewer.zip
+python scripts/bundle.py --kind install --output deslopify-install.zip
+python scripts/bundle.py --kind source --output deslopify-source.zip
+```
+
+The reviewer package contains raw cases and evaluator instructions but excludes the scoring oracle and known limitations. The install package contains runtime files only. The source package contains the complete project and operator material.
 
 ## Tested with
 

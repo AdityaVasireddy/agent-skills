@@ -32,11 +32,11 @@ Produces a structured end-of-session handoff so you can `/clear` and start a fre
 
 The rules that make it trustworthy: a precision-claims rule (never state a path, number, or change you didn't observe this session), a self-consistency pass (sections describing the same system must agree before saving), and classification-by-manifestation for issues vs. risks vs. debt. One markdown file, no dependencies.
 
-### [deslopify](https://github.com/AdityaVasireddy/agent-skills/blob/main/deslopify) — v0.9.2
+### [deslopify](https://github.com/AdityaVasireddy/agent-skills/blob/main/deslopify) — v1.0.0-rc.1
 
 Edits, drafts, or audits nonfiction prose for identifiable AI-writing patterns without flattening the writer's voice. A fixed precedence order protects facts, meaning, explicit instructions, and evidenced voice traits before pattern removal; terms of art and verbatim source material have explicit scope guards.
 
-Three modes cover direct editing, new drafting, and pattern detection without rewriting. The skill ships with a pass/fail quality gate, a blind-review harness, and separate overcorrection and undercorrection kill criteria. It is a public beta / release candidate hardened across thirteen adversarial review rounds; known open items are documented in `deslopify/KNOWN-LIMITATIONS.md`.
+Three modes cover direct editing, new drafting, and pattern detection without rewriting. The skill ships with a pass/fail quality gate, raw answer-free review cases, deterministic package builds, and separate overcorrection and undercorrection kill criteria. Behavioral v1.0 readiness remains documented in `deslopify/KNOWN-LIMITATIONS.md`.
 
 ## The through-line
 

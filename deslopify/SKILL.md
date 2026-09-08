@@ -1,6 +1,6 @@
 ---
 name: deslopify
-description: Remove AI writing patterns from prose while preserving the writer's voice. Three modes - edit a draft, draft new prose under the constraints, or detect patterns without rewriting. Use whenever the user shares writing to sharpen, tighten, de-AI, or make more direct; asks whether something reads as AI-written or wants a draft audited; or asks for a blog post, article, essay, email, newsletter, LinkedIn or X post, landing page, release note, README, or any nonfiction prose a person will read. Not for fiction, poetry, or screenwriting, where the patterns here are often deliberate craft. Also use when the user says "make this less AI", "this sounds like ChatGPT", "cut the fluff", "sharpen this", or "sounds generic". Do not use for code, code comments, structured data, translation, or summarizing a document for internal use.
+description: Remove AI writing patterns from nonfiction prose while preserving the writer's voice. Do not activate for fiction, poetry, or screenwriting, where these patterns may be deliberate craft; that exclusion wins before any "make this less AI" trigger. Three modes - edit a draft, draft new prose under the constraints, or detect patterns without rewriting. Use for nonfiction writing the user wants sharpened, tightened, de-AI'd, or made more direct; for audits of whether prose reads as AI-written; or for blog posts, articles, essays, emails, newsletters, LinkedIn or X posts, landing pages, release notes, READMEs, and similar nonfiction. Do not use for code, code comments, structured data, translation, or summarizing a document for internal use.
 ---
 
 # Deslopify
@@ -152,6 +152,8 @@ Run these before the gate. Each is a yes/no test with a named fix.
 - Final paragraph restating the piece? Cut. The reader was just there.
 - Three consecutive sentences the same length, in prose where the repetition sounds mechanical? Break one. Deliberately parallel structures are exempt: stepwise instructions, procedures, and lists rendered as sentences.
 - Em dash? Remove unless it clearly beats a comma, period, or parenthesis. None in short copy, 1 to 2 in long drafts.
+
+These style checks apply to user-provided or user-requested prose, not to the instructional text in this skill or its evaluation materials.
 - Claim or self-description that could belong to any company? Portability test failed. Cut or specify. Accurate procedural statements are exempt.
 
 ## Output
@@ -176,5 +178,5 @@ Run these before the gate. Each is a yes/no test with a named fix.
 3. Detect request? Produce the findings report and stop.
 4. Apply precedence, scope guards, and rules. Minimum effective edit unless a length target overrides.
 5. Run every check in `eval.md`. It is pass/fail, not a score.
-6. Any fail: fix and rerun the gate. Do not return output that has not passed, except through the two terminal exits: `BLOCKED` when a fail can only be cleared by inventing a fact, and `CONSTRAINT-CONFLICT` when a user constraint cannot coexist with a higher tier. Take the exit instead of looping or inventing.
+6. Any fail: fix and rerun the gate. Do not return output that has not passed, except through the two terminal exits: `BLOCKED` when a fail can only be cleared by inventing a fact, and `CONSTRAINT-CONFLICT` when a user constraint cannot coexist with a higher tier. For two explicit constraints at the same tier that cannot both hold, name the conflict and ask one clarification; if an interactive clarification is unavailable, use `CONSTRAINT-CONFLICT`, retain the maximum supported facts, and state which constraint was not met. Take an exit instead of looping or inventing.
 7. Return the output in the shape above.
