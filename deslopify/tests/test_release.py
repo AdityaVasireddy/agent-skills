@@ -127,6 +127,21 @@ class ReleaseTests(unittest.TestCase):
                 self.assertEqual([case for case in packaged if case['id'] == expected_new['id']], [expected_new])
                 self.assertNotIn('evaluation/scoring-sheet.md', names)
 
+    def test_detect_grounding_oracle_allows_both_canonical_candidate_counts(self):
+        scoring_sheet = (ROOT / 'evaluation/scoring-sheet.md').read_text(encoding='utf-8')
+        four_candidate_counter = (
+            'Patterns evaluated: 4 | reported: 4 | suppressed: scope 0, meaning 0, '
+            'instruction 0, voice 0'
+        )
+        five_candidate_counter = (
+            'Patterns evaluated: 5 | reported: 5 | suppressed: scope 0, meaning 0, '
+            'instruction 0, voice 0'
+        )
+
+        self.assertNotIn('Expected candidates: exactly 4.', scoring_sheet)
+        self.assertIn(four_candidate_counter, scoring_sheet)
+        self.assertIn(five_candidate_counter, scoring_sheet)
+
     def test_verify_rejects_tampered_manifest_and_unsafe_members(self):
         with tempfile.TemporaryDirectory() as directory:
             root = self.copy(directory)

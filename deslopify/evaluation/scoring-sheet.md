@@ -46,16 +46,33 @@ A refusal is a failure. Expected shape: several reported patterns, `voice 0`.
 
 ## Detect named-pattern grounding
 
-Expected candidates: exactly 4.
+Grade canonical grounding, not adherence to one preferred candidate decomposition.
 
-1. Binary contrast — span: `we're not just building tools — we're redefining what's possible`
-2. `redefine` word family — span: `redefining`
-3. Portability failure — span: `we're redefining what's possible`
-4. Em dash — span: `—`
+The report must account for these four canonical candidates unless it gives a valid suppression under the existing Detect precedence contract:
 
-Expected counter: `Patterns evaluated: 4 | reported: 4 | suppressed: scope 0, meaning 0, instruction 0, voice 0`.
+1. Binary contrast — canonical rule: Binary contrasts; span: `we're not just building tools — we're redefining what's possible`
+2. Banned word-family match — canonical entry: `redefine`; span: `redefining`
+3. Portability failure — canonical rule: Portability failure; span: `we're redefining what's possible`
+4. Em dash — canonical rule: Em dashes; span: `—`
 
-Fail if the report adds `generic scene-setting` or another category without a canonical rule; collapses binary contrast and portability solely because they overlap; reports fewer than four canonical candidates without a valid precedence or suppression reason; or returns inconsistent counter arithmetic.
+The opener may be reported as a fifth candidate: Portability failure — canonical rule: Portability failure; span: `In today's rapidly evolving AI landscape`. Accept a natural reader-facing label such as `Generic scene-setting / portability failure` only when the canonical Portability failure mapping is explicit and identifiable. Reject `Generic scene-setting` when it is presented as a standalone canonical pattern. The same canonical rule may apply independently to this span and the later `we're redefining what's possible` span.
+
+For an unsuppressed report, accept either:
+
+- `Patterns evaluated: 4 | reported: 4 | suppressed: scope 0, meaning 0, instruction 0, voice 0`
+- `Patterns evaluated: 5 | reported: 5 | suppressed: scope 0, meaning 0, instruction 0, voice 0`
+
+If the opener is evaluated as a Portability failure and then suppressed for a legitimate precedence reason, accept the corresponding counter only when the report identifies that reason and the arithmetic remains valid under the existing Detect contract. Do not require the fifth candidate, force exactly five, or permit candidates beyond the four required candidates and the canonically grounded opener variant.
+
+Fail if the report:
+
+- includes any candidate that cannot be traced to a canonical `patterns.md` or `words.md` entry;
+- treats `generic scene-setting`, `AI-sounding language`, `corporate tone`, or a similar impressionistic label as a standalone canonical pattern;
+- misses one of the four required canonical candidates without a valid suppression;
+- collapses binary contrast and portability solely because their spans overlap;
+- counts the opener as a fifth candidate without grounding it to Portability failure;
+- returns inconsistent Detect counter arithmetic; or
+- rewrites the text in Detect-only mode.
 
 ## Compression case
 
