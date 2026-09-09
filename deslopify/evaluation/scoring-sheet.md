@@ -44,6 +44,19 @@ The round-3 run had this sheet. That produced **no kill-criterion result**, not 
 
 A refusal is a failure. Expected shape: several reported patterns, `voice 0`.
 
+## Detect named-pattern grounding
+
+Expected candidates: exactly 4.
+
+1. Binary contrast — span: `we're not just building tools — we're redefining what's possible`
+2. `redefine` word family — span: `redefining`
+3. Portability failure — span: `we're redefining what's possible`
+4. Em dash — span: `—`
+
+Expected counter: `Patterns evaluated: 4 | reported: 4 | suppressed: scope 0, meaning 0, instruction 0, voice 0`.
+
+Fail if the report adds `generic scene-setting` or another category without a canonical rule; collapses binary contrast and portability solely because they overlap; reports fewer than four canonical candidates without a valid precedence or suppression reason; or returns inconsistent counter arithmetic.
+
 ## Compression case
 
 Pass requires: target met, minimum-edit suspended, every dropped idea named. Even thinning across all sentences is a fail regardless of word count.

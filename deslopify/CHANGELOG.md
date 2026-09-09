@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.0-rc.3 — Detect precision fix (2026-09-09)
+
+- Require every Detect candidate to trace to a canonical pattern, word, or phrase entry
+- Preserve separate counts for overlapping canonical matches while rejecting impressionistic umbrella categories
+- Add a blind regression case and operator-only four-candidate oracle for named-pattern grounding
+
 ## v1.0.0-rc.2 — release validation (2026-09-08)
 
 - Parse real YAML with duplicate-key and field-type checks; use folded frontmatter and Codex UI metadata

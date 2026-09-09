@@ -91,6 +91,42 @@ class ReleaseTests(unittest.TestCase):
         prompt = (ROOT / 'evaluation/review-prompt.md').read_text(encoding='utf-8')
         self.assertNotIn(cases[0]['text'].split('\n')[0], prompt)
 
+    def test_detect_grounding_case_is_in_reviewer_without_changing_existing_detect_cases(self):
+        expected_existing = {
+            'detect-human-technical': {
+                'mode': 'detect',
+                'request': 'Audit this for slop. Do not rewrite it.',
+                'text': "I spent four days on a bug that turned out to be a trailing slash. Four days. The config loader was doing path joins with string concatenation instead of path.join, so /etc/app/ and /etc/app resolved to different cache keys and the second one silently created an empty config. No error. Just an app that booted fine and ignored every setting.\n\nI want to say I found it through disciplined bisection. I found it because I got annoyed and started printing every variable in the loader. Sometimes that is the method. The fix was one character. The test that would have caught it took forty minutes to write and I wrote it after, which is the wrong order and I know it.",
+            },
+            'detect-marketing': {
+                'mode': 'detect',
+                'request': 'Audit this for slop. Do not rewrite it.',
+                'text': "In today's rapidly evolving digital landscape, businesses need robust solutions that can seamlessly scale with their needs. Our platform doesn't just streamline your workflow. It transforms it.\n\nHere's what most teams get wrong: they focus on tools instead of outcomes. The reality is that meaningful change requires more than software. It requires a paradigm shift.\n\nThat's why we built something different. A platform that empowers your team to delve into what actually matters, highlighting the insights that drive real results. Industry reports suggest that companies leveraging integrated workflows see significant improvements in productivity.\n\nThe future of work isn't coming. It's already here.",
+            },
+        }
+        expected_new = {
+            'id': 'detect-named-pattern-grounding',
+            'mode': 'detect',
+            'request': 'Audit this LinkedIn post for named slop patterns. Do not rewrite it.',
+            'text': "In today's rapidly evolving AI landscape, we're not just building tools — we're redefining what's possible.",
+        }
+        cases = json.loads((ROOT / 'evaluation/cases.json').read_text(encoding='utf-8'))
+        by_id = {case['id']: case for case in cases}
+        self.assertEqual(sum(case['id'] == expected_new['id'] for case in cases), 1)
+        self.assertEqual(by_id[expected_new['id']], expected_new)
+        for case_id, expected in expected_existing.items():
+            self.assertEqual(by_id[case_id], {'id': case_id, **expected})
+
+        with tempfile.TemporaryDirectory() as directory:
+            reviewer = Path(directory) / 'reviewer.zip'
+            result = self.run_script(ROOT, 'bundle.py', '--kind', 'reviewer', '--output', reviewer)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            with zipfile.ZipFile(reviewer) as archive:
+                names = set(archive.namelist())
+                packaged = json.loads(archive.read('evaluation/cases.json'))
+                self.assertEqual([case for case in packaged if case['id'] == expected_new['id']], [expected_new])
+                self.assertNotIn('evaluation/scoring-sheet.md', names)
+
     def test_verify_rejects_tampered_manifest_and_unsafe_members(self):
         with tempfile.TemporaryDirectory() as directory:
             root = self.copy(directory)

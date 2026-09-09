@@ -61,7 +61,7 @@ Patterns evaluated: N | reported: M | suppressed: scope S, meaning P, instructio
 
 `scope` covers only true false-positives — terms of art, code, identifiers, protected names — where the pattern is not really present. `meaning` covers the meaning tier, `instruction` covers explicit user instruction, `voice` covers writer voice. A real pattern inside a verbatim quotation is still reported, tagged `verbatim: report only, do not alter`; immutability is an editing limit, not evidence the pattern is absent, and Detect's job is to report what occurs. Factual accuracy needs no bucket, since Detect changes nothing.
 
-**One candidate = one source span × one named pattern or word**, matching words by family per `references/words.md`. Overlaps count separately: a sentence that is both a binary contrast and a banned word is two candidates. `N` must equal `M + S + P + I + V`; if it does not, you have miscounted.
+**One candidate = one source span × one named pattern or word**, matching words by family per `references/words.md`. Every candidate must trace to one canonical entry in `references/patterns.md` or one listed word or phrase family in `references/words.md`; its reader-facing label may be natural language, but the underlying rule must be identifiable. Do not count wording merely because it sounds generic, polished, corporate, AI-like, or like scene-setting. Overlapping canonical matches count separately even when their source spans overlap: a sentence that is both a binary contrast and a banned word is two candidates. `N` must equal `M + S + P + I + V`; if it does not, you have miscounted.
 
 Attribute each suppression to the reason that blocked it. Terms of art fall under `scope`, not `meaning`.
 

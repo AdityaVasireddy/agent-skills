@@ -32,7 +32,7 @@ Produces a structured end-of-session handoff so you can `/clear` and start a fre
 
 The rules that make it trustworthy: a precision-claims rule (never state a path, number, or change you didn't observe this session), a self-consistency pass (sections describing the same system must agree before saving), and classification-by-manifestation for issues vs. risks vs. debt. One markdown file, no dependencies.
 
-### [deslopify](https://github.com/AdityaVasireddy/agent-skills/blob/main/deslopify) — v1.0.0-rc.2
+### [deslopify](https://github.com/AdityaVasireddy/agent-skills/blob/main/deslopify) — v1.0.0-rc.3
 
 Edits, drafts, or audits nonfiction prose for identifiable AI-writing patterns without flattening the writer's voice. A fixed precedence order protects facts, meaning, explicit instructions, and evidenced voice traits before pattern removal; terms of art and verbatim source material have explicit scope guards.
 

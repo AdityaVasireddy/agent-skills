@@ -36,6 +36,12 @@
     "text": "In today's rapidly evolving digital landscape, businesses need robust solutions that can seamlessly scale with their needs. Our platform doesn't just streamline your workflow. It transforms it.\n\nHere's what most teams get wrong: they focus on tools instead of outcomes. The reality is that meaningful change requires more than software. It requires a paradigm shift.\n\nThat's why we built something different. A platform that empowers your team to delve into what actually matters, highlighting the insights that drive real results. Industry reports suggest that companies leveraging integrated workflows see significant improvements in productivity.\n\nThe future of work isn't coming. It's already here."
   },
   {
+    "id": "detect-named-pattern-grounding",
+    "mode": "detect",
+    "request": "Audit this LinkedIn post for named slop patterns. Do not rewrite it.",
+    "text": "In today's rapidly evolving AI landscape, we're not just building tools — we're redefining what's possible."
+  },
+  {
     "id": "draft-no-sample",
     "mode": "draft",
     "request": "Write a 60-word release note. Version 2.4 ships September 10, adding SSO and audit logs. Affects admin accounts only; existing sessions continue and no action is required. I have no writing samples for you."

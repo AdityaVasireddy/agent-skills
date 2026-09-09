@@ -46,6 +46,8 @@ The gate checks **authorization**, not unconditional re-application of the patte
 - Summary-recap ending cut
 - False agency, meaning misattributed intention or emotion. Institutional and system actors performing their specified behavior are out of scope
 
+11a. **Detect only:** can every reported candidate be traced to one canonical pattern or listed word or phrase family? Fail an invented umbrella category or an impressionistic complaint; keep independently matched canonical rules separate when their spans overlap.
+
 ## E. Overcorrection (these pass only if the answer is no)
 
 12. Were any adverbs cut that are not on the `words.md` list?
